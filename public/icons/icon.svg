@@ -1,9 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#f97316" />
+  <defs>
+    <linearGradient id="weekerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f6f8b" />
+      <stop offset="100%" stop-color="#2e8a62" />
+    </linearGradient>
+    <linearGradient id="weekerGlow" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#weekerGradient)" />
+  <rect width="512" height="512" rx="96" fill="url(#weekerGlow)" />
   <text
     x="50%"
     y="50%"
-    fill="#ffffff"
+    fill="#f5fbfa"
     font-family="'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
     font-size="280"
     font-weight="700"
