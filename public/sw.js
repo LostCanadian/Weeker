@@ -1,6 +1,11 @@
 const CACHE_NAME = 'weeker-cache-v1';
-const OFFLINE_URL = '/';
-const PRECACHE_ASSETS = [OFFLINE_URL, '/index.html', '/manifest.webmanifest'];
+const BASE_URL = new URL('./', self.location.href).pathname;
+const OFFLINE_URL = BASE_URL;
+const PRECACHE_ASSETS = [
+  OFFLINE_URL,
+  `${BASE_URL}index.html`,
+  `${BASE_URL}manifest.webmanifest`,
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
