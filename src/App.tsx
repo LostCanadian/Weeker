@@ -3,6 +3,7 @@ import {
   FocusEvent,
   FormEvent,
   KeyboardEvent,
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -40,6 +41,30 @@ const FocusNotes = ({
 }: FocusNotesProps) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const overlayContentRef = useRef<HTMLDivElement | null>(null);
+  const fieldRef = useRef<HTMLDivElement | null>(null);
+
+  const updateLineHeight = useCallback(() => {
+    if (!textareaRef.current || !fieldRef.current || typeof window === 'undefined') {
+      return;
+    }
+
+    const computedStyles = window.getComputedStyle(textareaRef.current);
+    const fontSize = parseFloat(computedStyles.fontSize || '0');
+    let lineHeight = computedStyles.lineHeight;
+
+    if (lineHeight === 'normal' && fontSize) {
+      lineHeight = `${fontSize * 1.2}px`;
+    } else if (!lineHeight.endsWith('px') && fontSize) {
+      const numericValue = parseFloat(lineHeight);
+      if (!Number.isNaN(numericValue)) {
+        lineHeight = `${numericValue * fontSize}px`;
+      }
+    }
+
+    if (lineHeight) {
+      fieldRef.current.style.setProperty('--focus-card-note-line-height', lineHeight);
+    }
+  }, []);
 
   const syncOverlayScroll = () => {
     if (!textareaRef.current || !overlayContentRef.current) {
@@ -51,7 +76,25 @@ const FocusNotes = ({
 
   useLayoutEffect(() => {
     syncOverlayScroll();
-  }, [note]);
+    updateLineHeight();
+  }, [note, updateLineHeight]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const handleResize = () => updateLineHeight();
+    window.addEventListener('resize', handleResize);
+
+    const fontSet = (document as Document & { fonts?: FontFaceSet }).fonts;
+    const handleFontLoad = () => updateLineHeight();
+
+    fontSet?.addEventListener('loadingdone', handleFontLoad);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      fontSet?.removeEventListener('loadingdone', handleFontLoad);
+    };
+  }, [updateLineHeight]);
 
   const lines = note.length > 0 ? note.split('\n') : [];
   const fieldClassName = ['focus-card__notes-field'];
@@ -60,7 +103,7 @@ const FocusNotes = ({
   }
 
   return (
-    <div className={fieldClassName.join(' ')}>
+    <div className={fieldClassName.join(' ')} ref={fieldRef}>
       <div className="focus-card__notes-overlay" aria-hidden>
         <div
           ref={overlayContentRef}
