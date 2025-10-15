@@ -1,5 +1,6 @@
 import {
   ChangeEvent,
+  FocusEvent,
   FormEvent,
   KeyboardEvent,
   useEffect,
@@ -14,6 +15,7 @@ type FocusItem = {
   title: string;
   targetHours: number;
   spentHours: number;
+  note: string;
 };
 
 const initialFocus: FocusItem[] = [
@@ -22,18 +24,21 @@ const initialFocus: FocusItem[] = [
     title: 'Deep Work Blocks',
     targetHours: 10,
     spentHours: 3.5,
+    note: '',
   },
   {
     id: 'collaboration',
     title: 'Collaboration & 1:1s',
     targetHours: 6,
     spentHours: 4,
+    note: '',
   },
   {
     id: 'learning',
     title: 'Learning & Growth',
     targetHours: 4,
     spentHours: 1.5,
+    note: '',
   },
 ];
 
@@ -45,7 +50,7 @@ type PersistedWeeksPayload = {
   weeks: WeekStorage;
 };
 
-const STORAGE_SCHEMA_VERSION = 1;
+const STORAGE_SCHEMA_VERSION = 2;
 
 const STORAGE_NAMESPACE = (() => {
   const explicit = import.meta.env.VITE_STORAGE_NAMESPACE?.trim();
@@ -66,7 +71,10 @@ const STORAGE_NAMESPACE = (() => {
 })();
 
 const STORAGE_KEY = `weeker:${STORAGE_NAMESPACE}:weeks:v${STORAGE_SCHEMA_VERSION}`;
-const LEGACY_STORAGE_KEYS = ['weeker:weeks:v1'];
+const LEGACY_STORAGE_KEYS = [
+  'weeker:weeks:v1',
+  `weeker:${STORAGE_NAMESPACE}:weeks:v1`,
+];
 const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
 const HOUR_LENGTH_MS = 60 * 60 * 1000;
 
@@ -76,20 +84,31 @@ const cloneFocusItems = (items: FocusItem[]): FocusItem[] =>
 const sanitizeFocusItems = (items: unknown): FocusItem[] => {
   if (!Array.isArray(items)) return [];
 
-  return items
-    .filter((item): item is FocusItem =>
-      typeof item === 'object' &&
-      item !== null &&
-      typeof item.id === 'string' &&
-      typeof item.title === 'string' &&
-      typeof item.targetHours === 'number' &&
-      typeof item.spentHours === 'number',
-    )
-    .map((item) => ({
-      ...item,
-      targetHours: Number.isFinite(item.targetHours) ? item.targetHours : 0,
-      spentHours: Number.isFinite(item.spentHours) ? item.spentHours : 0,
-    }));
+  const sanitized: FocusItem[] = [];
+
+  for (const raw of items) {
+    if (!raw || typeof raw !== 'object') continue;
+
+    const item = raw as Record<string, unknown>;
+    const id = typeof item.id === 'string' ? item.id : null;
+    const title = typeof item.title === 'string' ? item.title : null;
+    const targetHours = typeof item.targetHours === 'number' ? item.targetHours : null;
+    const spentHours = typeof item.spentHours === 'number' ? item.spentHours : null;
+
+    if (!id || !title || targetHours === null || spentHours === null) {
+      continue;
+    }
+
+    sanitized.push({
+      id,
+      title,
+      targetHours: Number.isFinite(targetHours) ? targetHours : 0,
+      spentHours: Number.isFinite(spentHours) ? spentHours : 0,
+      note: typeof item.note === 'string' ? item.note : '',
+    });
+  }
+
+  return sanitized;
 };
 
 const sanitizeWeekStorage = (value: unknown): WeekStorage => {
@@ -280,7 +299,8 @@ const areFocusItemsEqual = (
       a.id !== b.id ||
       a.title !== b.title ||
       a.targetHours !== b.targetHours ||
-      a.spentHours !== b.spentHours
+      a.spentHours !== b.spentHours ||
+      a.note !== b.note
     ) {
       return false;
     }
@@ -527,6 +547,7 @@ function App() {
       title: trimmedTitle,
       targetHours: Math.min(parsedTarget, 80),
       spentHours: 0,
+      note: '',
     };
 
     setFocusItems((items: FocusItem[]) => [newItem, ...items]);
@@ -592,6 +613,23 @@ function App() {
               ...item,
               targetHours: normalized,
             }
+          : item,
+      ),
+    );
+  };
+
+  const updateFocusNote = (id: string, note: string) => {
+    if (!isCurrentWeek) return;
+
+    setFocusItems((items: FocusItem[]) =>
+      items.map((item: FocusItem) =>
+        item.id === id
+          ? item.note === note
+            ? item
+            : {
+                ...item,
+                note,
+              }
           : item,
       ),
     );
@@ -964,6 +1002,25 @@ function App() {
                         : 'Keep investing time here.'}
                     </span>
                   </div>
+
+                  <label className="focus-card__notes">
+                    <span>Notes</span>
+                    <textarea
+                      value={item.note}
+                      onChange={(event: ChangeEvent<HTMLTextAreaElement>) =>
+                        updateFocusNote(item.id, event.target.value)
+                      }
+                      onBlur={(event: FocusEvent<HTMLTextAreaElement>) =>
+                        updateFocusNote(
+                          item.id,
+                          event.currentTarget.value.trimEnd(),
+                        )
+                      }
+                      placeholder="Jot down highlights, learnings, or next steps."
+                      rows={3}
+                      disabled={!isCurrentWeek}
+                    />
+                  </label>
                 </article>
               );
             })
