@@ -370,18 +370,21 @@
   gap: 1.25rem;
   box-shadow: 0 28px 64px rgba(18, 50, 47, 0.18);
   border: 1px solid transparent;
-  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   backdrop-filter: blur(10px);
 }
 
 .focus-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 32px 70px rgba(18, 50, 47, 0.2);
+  box-shadow: 0 0 0 3px var(--color-accent), 0 32px 70px rgba(18, 50, 47, 0.2);
 }
 
 .focus-card--achieved {
   border-color: var(--color-highlight-soft);
   box-shadow: 0 30px 70px rgba(46, 138, 98, 0.22);
+}
+
+.focus-card--achieved:hover {
+  box-shadow: 0 0 0 3px var(--color-highlight), 0 32px 72px rgba(46, 138, 98, 0.24);
 }
 
 .focus-card__header {
