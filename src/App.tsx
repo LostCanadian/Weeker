@@ -293,7 +293,7 @@ function App() {
     cloneFocusItems(initialFocus),
   );
   const [newTitle, setNewTitle] = useState('');
-  const [newTarget, setNewTarget] = useState('4');
+  const [newTarget, setNewTarget] = useState(4);
   const [weeksData, setWeeksData] = useState<WeekStorage>({});
   const [storageReady, setStorageReady] = useState(false);
   const [today, setToday] = useState(() => new Date());
@@ -507,23 +507,38 @@ function App() {
     }
 
     const trimmedTitle = newTitle.trim();
-    const parsedTarget = Number(newTarget);
-
-    if (!trimmedTitle || Number.isNaN(parsedTarget) || parsedTarget <= 0) {
+    if (!trimmedTitle || !Number.isFinite(newTarget) || newTarget <= 0) {
       return;
     }
+
+    const normalizedTarget = Math.min(
+      Math.max(Math.round(newTarget * 2) / 2, 0.5),
+      80,
+    );
 
     const newItem: FocusItem = {
       id: `focus-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`,
       title: trimmedTitle,
-      targetHours: Math.min(parsedTarget, 80),
+      targetHours: normalizedTarget,
       spentHours: 0,
       note: '',
     };
 
     setFocusItems((items: FocusItem[]) => [newItem, ...items]);
     setNewTitle('');
-    setNewTarget(parsedTarget.toString());
+    setNewTarget(normalizedTarget);
+  };
+
+  const adjustNewTarget = (delta: number) => {
+    if (!canEditCurrentWeek) return;
+
+    setNewTarget((current) => {
+      const next = Math.min(
+        Math.max(Math.round((current + delta) * 2) / 2, 0.5),
+        80,
+      );
+      return next;
+    });
   };
 
   const updateSpentHours = (id: string, newSpent: number) => {
@@ -802,18 +817,40 @@ function App() {
               required
             />
           </label>
-          <label className="planner__field">
+          <div className="planner__field">
             <span>Target time (hours)</span>
-            <input
-              type="number"
-              min="0.5"
-              step="0.5"
-              value={newTarget}
-              onChange={(event) => setNewTarget(event.target.value)}
-              disabled={!canEditCurrentWeek}
-              required
-            />
-          </label>
+            <div className="planner__target-control">
+              <div className="planner__target-display" aria-live="polite">
+                <strong>{newTarget.toFixed(1)}h</strong>
+              </div>
+              <div className="actions__group">
+                <button
+                  type="button"
+                  onClick={() => adjustNewTarget(-0.5)}
+                  disabled={!canEditCurrentWeek || newTarget <= 0.5}
+                  aria-label="Decrease target by 0.5 hours"
+                >
+                  -0.5h
+                </button>
+                <button
+                  type="button"
+                  onClick={() => adjustNewTarget(0.5)}
+                  disabled={!canEditCurrentWeek}
+                  aria-label="Increase target by 0.5 hours"
+                >
+                  +0.5h
+                </button>
+                <button
+                  type="button"
+                  onClick={() => adjustNewTarget(1)}
+                  disabled={!canEditCurrentWeek}
+                  aria-label="Increase target by 1 hour"
+                >
+                  +1h
+                </button>
+              </div>
+            </div>
+          </div>
           <button
             type="submit"
             className="primary-button"
