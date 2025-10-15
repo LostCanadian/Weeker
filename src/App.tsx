@@ -598,7 +598,7 @@ function App() {
       return;
     }
 
-    const normalized = Math.min(Math.round(target * 4) / 4, 80);
+    const normalized = Math.min(Math.max(Math.round(target * 2) / 2, 0.5), 80);
 
     setFocusItems((items: FocusItem[]) =>
       items.map((item: FocusItem) =>
@@ -629,7 +629,7 @@ function App() {
 
     node.focus();
     node.select();
-  }, [activeEdit]);
+  }, [activeEdit?.id, activeEdit?.field]);
 
   const startEditing = (item: FocusItem, field: 'title' | 'target') => {
     if (!isCurrentWeek) return;
@@ -876,8 +876,8 @@ function App() {
                               ref={editInputRef}
                               className="focus-card__editable-input focus-card__target-input"
                               type="number"
-                              step={0.25}
-                              min={0.25}
+                              step={0.5}
+                              min={0.5}
                               value={activeEdit.value}
                               onChange={handleEditChange}
                               onBlur={handleEditBlur}
