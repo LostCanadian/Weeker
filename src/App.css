@@ -515,6 +515,45 @@ body {
   color: #0f172a;
 }
 
+.focus-card__notes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-weight: 600;
+  color: #52606d;
+}
+
+.focus-card__notes textarea {
+  resize: vertical;
+  min-height: 3.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-family: inherit;
+  color: #0f172a;
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.focus-card__notes textarea::placeholder {
+  color: #94a3b8;
+}
+
+.focus-card__notes textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.focus-card__notes textarea:disabled {
+  background: #e2e8f0;
+  color: #475569;
+  cursor: not-allowed;
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
 @media (max-width: 600px) {
   .app {
     padding: 2.5rem 1rem 3rem;
