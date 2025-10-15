@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 
 type FocusItem = {
@@ -306,6 +306,7 @@ function App() {
   const [weeksData, setWeeksData] = useState<WeekStorage>({});
   const [storageReady, setStorageReady] = useState(false);
   const [today, setToday] = useState(() => new Date());
+  const focusItemsRef = useRef<FocusItem[]>(focusItems);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -345,28 +346,41 @@ function App() {
   }, [currentWeekKey]);
 
   useEffect(() => {
+    focusItemsRef.current = focusItems;
+  }, [focusItems]);
+
+  useEffect(() => {
     if (!storageReady) return;
 
     const storedItems = weeksData[selectedWeekKey];
+    const currentItems = focusItemsRef.current;
 
     if (storedItems) {
-      if (!areFocusItemsEqual(storedItems, focusItems)) {
+      if (!areFocusItemsEqual(storedItems, currentItems)) {
         setFocusItems(cloneFocusItems(storedItems));
       }
-    } else if (selectedWeekKey === currentWeekKey) {
+      return;
+    }
+
+    if (selectedWeekKey === currentWeekKey) {
       const baseItems = cloneFocusItems(initialFocus).map((item) => ({
         ...item,
         spentHours: 0,
       }));
+      focusItemsRef.current = baseItems;
       setFocusItems(baseItems);
       setWeeksData((prev: WeekStorage) => ({
         ...prev,
         [selectedWeekKey]: baseItems,
       }));
-    } else if (focusItems.length > 0) {
+      return;
+    }
+
+    if (currentItems.length > 0) {
+      focusItemsRef.current = [];
       setFocusItems([]);
     }
-  }, [selectedWeekKey, weeksData, storageReady, currentWeekKey, focusItems]);
+  }, [selectedWeekKey, weeksData, storageReady, currentWeekKey]);
 
   useEffect(() => {
     if (!storageReady) return;
