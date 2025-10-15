@@ -68,7 +68,7 @@ const STORAGE_NAMESPACE = (() => {
 const STORAGE_KEY = `weeker:${STORAGE_NAMESPACE}:weeks:v${STORAGE_SCHEMA_VERSION}`;
 const LEGACY_STORAGE_KEYS = ['weeker:weeks:v1'];
 const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
-const DAY_LENGTH_MS = 24 * 60 * 60 * 1000;
+const HOUR_LENGTH_MS = 60 * 60 * 1000;
 
 const cloneFocusItems = (items: FocusItem[]): FocusItem[] =>
   items.map((item) => ({ ...item }));
@@ -231,26 +231,10 @@ const clampToWeek = (start: Date, value: number): number => {
   );
 };
 
-const getElapsedWeekDays = (start: Date, today: Date): number => {
+const getElapsedWeekHours = (start: Date, today: Date): number => {
   const normalizedStart = normalizeToStartOfDay(start);
-  const weekStartUtc = Date.UTC(
-    normalizedStart.getFullYear(),
-    normalizedStart.getMonth(),
-    normalizedStart.getDate(),
-  );
-  const nextWeekUtc = Date.UTC(
-    normalizedStart.getFullYear(),
-    normalizedStart.getMonth(),
-    normalizedStart.getDate() + 7,
-  );
-  const todayUtc = Date.UTC(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate(),
-  );
-
-  const clampedUtc = Math.min(Math.max(todayUtc, weekStartUtc), nextWeekUtc);
-  return Math.floor((clampedUtc - weekStartUtc) / DAY_LENGTH_MS);
+  const clampedNow = clampToWeek(normalizedStart, today.getTime());
+  return (clampedNow - normalizedStart.getTime()) / HOUR_LENGTH_MS;
 };
 
 const formatWeekKey = (date: Date): string => {
@@ -472,16 +456,17 @@ function App() {
     return 100;
   }, [isCurrentWeek, selectedWeekStart, today]);
 
-  const daysCompletedLabel = useMemo(() => {
+  const hoursCompletedLabel = useMemo(() => {
     if (!isCurrentWeek) {
       return selectedWeekStart.getTime() > today.getTime()
         ? 'Week not started'
         : 'Week complete';
     }
 
-    const elapsedDays = getElapsedWeekDays(selectedWeekStart, today);
+    const elapsedHours = getElapsedWeekHours(selectedWeekStart, today);
+    const weekDurationHours = getWeekDurationMs(selectedWeekStart) / HOUR_LENGTH_MS;
 
-    return `${elapsedDays} of 7 days`;
+    return `${elapsedHours.toFixed(1)} of ${weekDurationHours.toFixed(1)} hours`;
   }, [isCurrentWeek, selectedWeekStart, today]);
 
   const currentDayLabel = useMemo(() => {
@@ -778,7 +763,7 @@ function App() {
         <div>
           <span className="summary__label">Week progress</span>
           <strong>{weekProgressPercent.toFixed(0)}%</strong>
-          <span className="summary__hint">{daysCompletedLabel}</span>
+          <span className="summary__hint">{hoursCompletedLabel}</span>
         </div>
       </section>
 
