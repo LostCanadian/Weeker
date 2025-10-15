@@ -28,6 +28,21 @@
   --color-accent-soft: rgba(31, 111, 139, 0.18);
   --color-highlight: #2e8a62;
   --color-highlight-soft: rgba(46, 138, 98, 0.22);
+  --color-surface-hover-start: color-mix(
+    in srgb,
+    var(--color-surface-elevated) 92%,
+    var(--color-accent) 8%
+  );
+  --color-surface-hover-end: color-mix(
+    in srgb,
+    var(--color-surface-elevated) 82%,
+    var(--color-highlight) 18%
+  );
+  --color-input-hover: color-mix(
+    in srgb,
+    var(--color-input-bg) 90%,
+    var(--color-accent) 10%
+  );
   --color-tagline: #506762;
   --color-disabled-bg: rgba(182, 197, 194, 0.38);
   --color-disabled-text: rgba(74, 92, 88, 0.7);
@@ -52,6 +67,21 @@
     --color-accent-soft: rgba(59, 167, 193, 0.28);
     --color-highlight: #4ac99e;
     --color-highlight-soft: rgba(74, 201, 158, 0.28);
+    --color-surface-hover-start: color-mix(
+      in srgb,
+      var(--color-surface-elevated) 70%,
+      var(--color-accent) 30%
+    );
+    --color-surface-hover-end: color-mix(
+      in srgb,
+      var(--color-surface-elevated) 58%,
+      var(--color-highlight) 42%
+    );
+    --color-input-hover: color-mix(
+      in srgb,
+      var(--color-input-bg) 72%,
+      var(--color-accent) 28%
+    );
     --color-tagline: #9ab3af;
     --color-disabled-bg: rgba(36, 52, 53, 0.7);
     --color-disabled-text: rgba(173, 199, 196, 0.72);
