@@ -18,29 +18,7 @@ type FocusItem = {
   note: string;
 };
 
-const initialFocus: FocusItem[] = [
-  {
-    id: 'deep-work',
-    title: 'Deep Work Blocks',
-    targetHours: 10,
-    spentHours: 3.5,
-    note: '',
-  },
-  {
-    id: 'collaboration',
-    title: 'Collaboration & 1:1s',
-    targetHours: 6,
-    spentHours: 4,
-    note: '',
-  },
-  {
-    id: 'learning',
-    title: 'Learning & Growth',
-    targetHours: 4,
-    spentHours: 1.5,
-    note: '',
-  },
-];
+const initialFocus: FocusItem[] = [];
 
 type WeekStorage = Record<string, FocusItem[]>;
 
@@ -358,16 +336,9 @@ function App() {
   useEffect(() => {
     const storedWeeks = storageAdapter.load();
 
-    if (!storedWeeks[currentWeekKey]) {
-      storedWeeks[currentWeekKey] = cloneFocusItems(initialFocus).map((item) => ({
-        ...item,
-        spentHours: 0,
-      }));
-    }
-
     setWeeksData(storedWeeks);
     setStorageReady(true);
-  }, [currentWeekKey]);
+  }, []);
 
   useEffect(() => {
     focusItemsRef.current = focusItems;
@@ -387,27 +358,12 @@ function App() {
       return;
     }
 
-    if (selectedWeekKey === currentWeekKey) {
-      const baseItems = cloneFocusItems(initialFocus).map((item) => ({
-        ...item,
-        spentHours: 0,
-      }));
-      focusItemsRef.current = baseItems;
-      suppressNextPersistRef.current = true;
-      setFocusItems(baseItems);
-      setWeeksData((prev: WeekStorage) => ({
-        ...prev,
-        [selectedWeekKey]: baseItems,
-      }));
-      return;
-    }
-
     if (currentItems.length > 0) {
       suppressNextPersistRef.current = true;
       focusItemsRef.current = [];
       setFocusItems([]);
     }
-  }, [selectedWeekKey, weeksData, storageReady, currentWeekKey]);
+  }, [selectedWeekKey, weeksData, storageReady]);
 
   useEffect(() => {
     if (!storageReady) return;
@@ -418,6 +374,10 @@ function App() {
     }
 
     setWeeksData((prev: WeekStorage) => {
+      if (!Object.prototype.hasOwnProperty.call(prev, selectedWeekKey)) {
+        return prev;
+      }
+
       const previousItems = prev[selectedWeekKey];
       if (areFocusItemsEqual(previousItems, focusItems)) {
         return prev;
@@ -436,14 +396,10 @@ function App() {
     storageAdapter.save(weeksData);
   }, [weeksData, storageReady]);
 
-  const sortedWeekKeys = useMemo(() => {
-    const keys = Object.keys(weeksData);
-    if (!keys.includes(currentWeekKey)) {
-      keys.push(currentWeekKey);
-    }
-
-    return keys.sort((a, b) => (a < b ? 1 : -1));
-  }, [weeksData, currentWeekKey]);
+  const sortedWeekKeys = useMemo(
+    () => Object.keys(weeksData).sort((a, b) => (a < b ? 1 : -1)),
+    [weeksData],
+  );
 
   const selectedWeekStart = useMemo(
     () => parseWeekKey(selectedWeekKey),
@@ -454,6 +410,12 @@ function App() {
     [selectedWeekStart],
   );
   const isCurrentWeek = selectedWeekKey === currentWeekKey;
+  const currentWeekExists = Object.prototype.hasOwnProperty.call(
+    weeksData,
+    currentWeekKey,
+  );
+  const canEditCurrentWeek = isCurrentWeek && currentWeekExists;
+  const showStartWeekButton = storageReady && !currentWeekExists;
   const selectedWeekEnd = useMemo(
     () => getEndOfWeek(selectedWeekStart),
     [selectedWeekStart],
@@ -529,10 +491,18 @@ function App() {
     };
   }, [focusItems]);
 
+  const weekSelectValue = sortedWeekKeys.includes(selectedWeekKey)
+    ? selectedWeekKey
+    : '';
+  const reviewPlaceholder =
+    sortedWeekKeys.length === 0
+      ? 'No weeks to review yet'
+      : 'Select a week to review';
+
   const handleAddFocus = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!isCurrentWeek) {
+    if (!canEditCurrentWeek) {
       return;
     }
 
@@ -557,7 +527,7 @@ function App() {
   };
 
   const updateSpentHours = (id: string, newSpent: number) => {
-    if (!isCurrentWeek) return;
+    if (!canEditCurrentWeek) return;
 
     setFocusItems((items: FocusItem[]) =>
       items.map((item: FocusItem) =>
@@ -572,7 +542,7 @@ function App() {
   };
 
   const adjustSpent = (id: string, delta: number) => {
-    if (!isCurrentWeek) return;
+    if (!canEditCurrentWeek) return;
 
     const current = focusItems.find((item: FocusItem) => item.id === id);
     if (!current) return;
@@ -581,7 +551,7 @@ function App() {
   };
 
   const updateFocusTitle = (id: string, title: string) => {
-    if (!isCurrentWeek) return;
+    if (!canEditCurrentWeek) return;
 
     const trimmed = title.trim();
     if (!trimmed) return;
@@ -599,7 +569,7 @@ function App() {
   };
 
   const updateTargetHours = (id: string, target: number) => {
-    if (!isCurrentWeek) return;
+    if (!canEditCurrentWeek) return;
 
     if (Number.isNaN(target) || target <= 0) {
       return;
@@ -620,7 +590,7 @@ function App() {
   };
 
   const updateFocusNote = (id: string, note: string) => {
-    if (!isCurrentWeek) return;
+    if (!canEditCurrentWeek) return;
 
     setFocusItems((items: FocusItem[]) =>
       items.map((item: FocusItem) =>
@@ -656,7 +626,7 @@ function App() {
   }, [activeEdit?.id, activeEdit?.field]);
 
   const startEditing = (item: FocusItem, field: 'title' | 'target') => {
-    if (!isCurrentWeek) return;
+    if (!canEditCurrentWeek) return;
 
     cancelEditRef.current = false;
     setActiveEdit({
@@ -716,22 +686,29 @@ function App() {
   };
 
   const removeFocusItem = (id: string) => {
-    if (!isCurrentWeek) return;
+    if (!canEditCurrentWeek) return;
 
     setFocusItems((items: FocusItem[]) =>
       items.filter((item: FocusItem) => item.id !== id),
     );
   };
 
-  const resetWeek = () => {
-    if (!isCurrentWeek) return;
+  const startCurrentWeek = () => {
+    if (currentWeekExists) return;
 
-    setFocusItems((items: FocusItem[]) =>
-      items.map((item: FocusItem) => ({
-        ...item,
-        spentHours: 0,
-      })),
-    );
+    const baseItems = cloneFocusItems(initialFocus).map((item) => ({
+      ...item,
+      spentHours: 0,
+    }));
+
+    focusItemsRef.current = baseItems;
+    suppressNextPersistRef.current = true;
+    setFocusItems(baseItems);
+    setWeeksData((prev: WeekStorage) => ({
+      ...prev,
+      [currentWeekKey]: baseItems,
+    }));
+    setSelectedWeekKey(currentWeekKey);
   };
 
   return (
@@ -743,14 +720,15 @@ function App() {
             Set weekly themes, focus your time, and celebrate what you achieve.
           </p>
         </div>
-        <button
-          className="reset-button"
-          type="button"
-          onClick={resetWeek}
-          disabled={!isCurrentWeek}
-        >
-          Start a fresh week
-        </button>
+        {showStartWeekButton && (
+          <button
+            className="reset-button"
+            type="button"
+            onClick={startCurrentWeek}
+          >
+            Start a fresh week
+          </button>
+        )}
       </header>
 
       <section className="week-context" aria-label="Week overview">
@@ -763,9 +741,13 @@ function App() {
           <label className="week-selector">
             <span className="week-selector__label">Review week</span>
             <select
-              value={selectedWeekKey}
+              value={weekSelectValue}
               onChange={(event) => setSelectedWeekKey(event.target.value)}
+              disabled={sortedWeekKeys.length === 0}
             >
+              <option value="" disabled>
+                {reviewPlaceholder}
+              </option>
               {sortedWeekKeys.map((weekKey) => {
                 const weekStart = parseWeekKey(weekKey);
                 return (
@@ -816,7 +798,7 @@ function App() {
               placeholder="e.g. Product strategy"
               value={newTitle}
               onChange={(event) => setNewTitle(event.target.value)}
-              disabled={!isCurrentWeek}
+              disabled={!canEditCurrentWeek}
               required
             />
           </label>
@@ -828,14 +810,14 @@ function App() {
               step="0.5"
               value={newTarget}
               onChange={(event) => setNewTarget(event.target.value)}
-              disabled={!isCurrentWeek}
+              disabled={!canEditCurrentWeek}
               required
             />
           </label>
           <button
             type="submit"
             className="primary-button"
-            disabled={!isCurrentWeek}
+            disabled={!canEditCurrentWeek}
           >
             Add focus card
           </button>
@@ -880,7 +862,7 @@ function App() {
                             type="button"
                             className="focus-card__editable focus-card__editable--title"
                             onClick={() => startEditing(item, 'title')}
-                            disabled={!isCurrentWeek}
+                            disabled={!canEditCurrentWeek}
                             aria-label={`Edit title for ${item.title}`}
                           >
                             {item.title}
@@ -912,7 +894,7 @@ function App() {
                             type="button"
                             className="focus-card__editable focus-card__editable--target"
                             onClick={() => startEditing(item, 'target')}
-                            disabled={!isCurrentWeek}
+                            disabled={!canEditCurrentWeek}
                             aria-label={`Edit target hours for ${item.title}`}
                           >
                             {item.targetHours.toFixed(1)}h
@@ -928,7 +910,7 @@ function App() {
                       type="button"
                       className="icon-button"
                       onClick={() => removeFocusItem(item.id)}
-                      disabled={!isCurrentWeek}
+                      disabled={!canEditCurrentWeek}
                       aria-label={`Remove ${item.title}`}
                     >
                       ×
@@ -956,21 +938,21 @@ function App() {
                       <button
                         type="button"
                         onClick={() => adjustSpent(item.id, -0.5)}
-                        disabled={!isCurrentWeek || item.spentHours <= 0}
+                        disabled={!canEditCurrentWeek || item.spentHours <= 0}
                       >
                         -0.5h
                       </button>
                       <button
                         type="button"
                         onClick={() => adjustSpent(item.id, 0.5)}
-                        disabled={!isCurrentWeek}
+                        disabled={!canEditCurrentWeek}
                       >
                         +0.5h
                       </button>
                       <button
                         type="button"
                         onClick={() => adjustSpent(item.id, 1)}
-                        disabled={!isCurrentWeek}
+                        disabled={!canEditCurrentWeek}
                       >
                         +1h
                       </button>
@@ -997,7 +979,7 @@ function App() {
                       }
                       placeholder="Jot down highlights, learnings, or next steps."
                       rows={3}
-                      disabled={!isCurrentWeek}
+                      disabled={!canEditCurrentWeek}
                     />
                   </label>
                 </article>
