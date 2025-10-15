@@ -13,7 +13,7 @@ elsewhere.
 Key capabilities include:
 
 - Add new focus cards with a name and target number of hours.
-- Track invested time with quick increment controls or a slider.
+- Track invested time with quick increment controls.
 - Reset the week to clear logged time while keeping your focus areas intact.
 - Remove focus cards you no longer want to track.
 - Review a weekly summary of targets, time invested, and achieved areas.

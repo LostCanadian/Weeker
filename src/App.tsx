@@ -849,11 +849,6 @@ function App() {
           ) : (
             focusItems.map((item) => {
               const isAchieved = item.spentHours >= item.targetHours;
-              const sliderMax = Math.max(
-                item.targetHours,
-                item.spentHours,
-                item.targetHours * 1.5,
-              );
               const progressPercent = item.targetHours
                 ? Math.min((item.spentHours / item.targetHours) * 100, 120)
                 : 0;
@@ -955,23 +950,6 @@ function App() {
                       )}
                     </div>
                   </div>
-
-                  <label className="focus-card__slider">
-                    <span>Logged time</span>
-                    <input
-                      type="range"
-                      min={0}
-                      max={sliderMax}
-                      step={0.25}
-                      value={item.spentHours}
-                      onChange={(event) =>
-                        updateSpentHours(item.id, Number(event.target.value))
-                      }
-                      disabled={!isCurrentWeek}
-                      aria-label={`Logged hours for ${item.title}`}
-                    />
-                  </label>
-
                   <div className="focus-card__actions">
                     <div className="actions__group">
                       <button
