@@ -153,9 +153,9 @@
 }
 
 .summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
   background: var(--color-surface);
   border-radius: 1.25rem;
   padding: 1.75rem 2rem;
@@ -164,7 +164,13 @@
   backdrop-filter: blur(10px);
 }
 
-.summary > div {
+.summary__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+}
+
+.summary__stat {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -180,6 +186,12 @@
 .summary strong {
   font-size: 1.6rem;
   color: var(--color-accent-strong);
+}
+
+.summary__progress-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .summary__progress {
@@ -221,13 +233,6 @@
 
 .summary__progress-fill--accent {
   background: linear-gradient(90deg, rgba(47, 133, 90, 0.6), rgba(47, 133, 90, 1));
-}
-
-.summary__hint {
-  display: block;
-  margin-top: 0.25rem;
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
 }
 
 .planner {

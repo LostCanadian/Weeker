@@ -17,11 +17,8 @@ import {
   calculateWeekProgressPercent,
   formatWeekKey,
   formatWeekLabel,
-  getElapsedWeekHours,
   getEndOfWeek,
   getStartOfWeek,
-  getWeekDurationMs,
-  HOUR_LENGTH_MS,
   parseWeekKey,
 } from './utils/weekDates';
 
@@ -169,19 +166,6 @@ function App() {
       calculateWeekProgressPercent(selectedWeekStart, today, isCurrentWeek),
     [isCurrentWeek, selectedWeekStart, today],
   );
-
-  const hoursCompletedLabel = useMemo(() => {
-    if (!isCurrentWeek) {
-      return selectedWeekStart.getTime() > today.getTime()
-        ? 'Week not started'
-        : 'Week complete';
-    }
-
-    const elapsedHours = getElapsedWeekHours(selectedWeekStart, today);
-    const weekDurationHours = getWeekDurationMs(selectedWeekStart) / HOUR_LENGTH_MS;
-
-    return `${elapsedHours.toFixed(1)} of ${weekDurationHours.toFixed(1)} hours`;
-  }, [isCurrentWeek, selectedWeekStart, today]);
 
   const currentDayLabel = useMemo(() => {
     const formatter = new Intl.DateTimeFormat(undefined, {
@@ -530,21 +514,23 @@ function App() {
 
       {selectedWeekHasData && (
         <section className="summary" aria-label="Weekly focus summary">
-          <div>
-            <span className="summary__label">Total target</span>
-            <strong>{summary.target.toFixed(1)}h</strong>
+          <div className="summary__stats">
+            <div className="summary__stat">
+              <span className="summary__label">Total target</span>
+              <strong>{summary.target.toFixed(1)}h</strong>
+            </div>
+            <div className="summary__stat">
+              <span className="summary__label">Time invested</span>
+              <strong>{summary.spent.toFixed(1)}h</strong>
+            </div>
+            <div className="summary__stat">
+              <span className="summary__label">Achieved focus areas</span>
+              <strong>
+                {summary.achievedCount} / {focusItems.length}
+              </strong>
+            </div>
           </div>
-          <div>
-            <span className="summary__label">Time invested</span>
-            <strong>{summary.spent.toFixed(1)}h</strong>
-          </div>
-          <div>
-            <span className="summary__label">Achieved focus areas</span>
-            <strong>
-              {summary.achievedCount} / {focusItems.length}
-            </strong>
-          </div>
-          <div>
+          <div className="summary__progress-card">
             <span className="summary__label">Week progress</span>
             <div className="summary__progress">
               <div className="summary__progress-item">
@@ -585,7 +571,6 @@ function App() {
                   />
                 </div>
               </div>
-              <span className="summary__hint">{hoursCompletedLabel}</span>
             </div>
           </div>
         </section>
