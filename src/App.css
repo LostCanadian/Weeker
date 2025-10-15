@@ -598,6 +598,7 @@
   --focus-card-note-bullet-color: var(--color-accent);
   --focus-card-note-bullet-size: 0.35rem;
   --focus-card-note-bullet-gap: 0.9rem;
+  --focus-card-note-line-height: 1.4em;
 }
 
 .focus-card__notes-field:focus-within {
@@ -623,7 +624,7 @@
   border-radius: 0.75rem;
   padding: 0.75rem 1rem 0.75rem 2.25rem;
   font-size: 0.95rem;
-  line-height: 1.4;
+  line-height: var(--focus-card-note-line-height);
   font-family: inherit;
   color: var(--color-text);
   background: transparent;
@@ -648,7 +649,7 @@
   padding: 0.75rem 1rem;
   pointer-events: none;
   font-size: 0.95rem;
-  line-height: 1.4;
+  line-height: var(--focus-card-note-line-height);
   font-family: inherit;
   color: transparent;
   overflow: hidden;
@@ -664,7 +665,7 @@
   grid-template-columns: var(--focus-card-note-bullet-size) 1fr;
   column-gap: var(--focus-card-note-bullet-gap);
   color: inherit;
-  min-height: 1.4em;
+  min-height: var(--focus-card-note-line-height);
   align-items: flex-start;
 }
 
@@ -674,8 +675,9 @@
   height: var(--focus-card-note-bullet-size);
   border-radius: 50%;
   background: var(--focus-card-note-bullet-color);
-  margin-top: 0.55em;
-  transform: translateY(-50%);
+  margin-top: calc(
+    (var(--focus-card-note-line-height) - var(--focus-card-note-bullet-size)) / 2
+  );
 }
 
 .focus-card__notes-line-text {
