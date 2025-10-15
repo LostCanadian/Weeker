@@ -456,24 +456,6 @@ body {
   color: #047857;
 }
 
-.focus-card__slider {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-weight: 600;
-  color: #52606d;
-}
-
-.focus-card__slider input[type='range'] {
-  width: 100%;
-  accent-color: #2563eb;
-}
-
-.focus-card__slider input[type='range']:disabled {
-  accent-color: #94a3b8;
-  cursor: not-allowed;
-}
-
 .focus-card__actions {
   display: flex;
   flex-wrap: wrap;
