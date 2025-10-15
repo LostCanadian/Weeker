@@ -222,6 +222,18 @@ function App() {
     };
   }, [focusItems]);
 
+  const timeInvestedPercent = useMemo(() => {
+    if (summary.target <= 0) return 0;
+
+    const percent = (summary.spent / summary.target) * 100;
+    return Number.isFinite(percent) ? Math.max(percent, 0) : 0;
+  }, [summary.spent, summary.target]);
+
+  const weekProgressValue = Number(weekProgressPercent.toFixed(1));
+  const timeInvestedValue = Number(timeInvestedPercent.toFixed(1));
+  const weekProgressFill = Math.min(Math.max(weekProgressValue, 0), 100);
+  const timeInvestedFill = Math.min(Math.max(timeInvestedValue, 0), 100);
+
   const weekSelectValue = sortedWeekKeys.includes(selectedWeekKey)
     ? selectedWeekKey
     : '';
@@ -534,8 +546,47 @@ function App() {
           </div>
           <div>
             <span className="summary__label">Week progress</span>
-            <strong>{weekProgressPercent.toFixed(0)}%</strong>
-            <span className="summary__hint">{hoursCompletedLabel}</span>
+            <div className="summary__progress">
+              <div className="summary__progress-item">
+                <div className="summary__progress-header">
+                  <span>Week timeline</span>
+                  <span>{weekProgressValue.toFixed(0)}%</span>
+                </div>
+                <div
+                  className="summary__progress-track"
+                  role="progressbar"
+                  aria-label="Week timeline progress"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.min(Math.max(weekProgressValue, 0), 100)}
+                >
+                  <div
+                    className="summary__progress-fill"
+                    style={{ width: `${weekProgressFill}%` }}
+                  />
+                </div>
+              </div>
+              <div className="summary__progress-item">
+                <div className="summary__progress-header">
+                  <span>Target invested</span>
+                  <span>{timeInvestedValue.toFixed(0)}%</span>
+                </div>
+                <div
+                  className="summary__progress-track"
+                  role="progressbar"
+                  aria-label="Time invested versus target"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.min(Math.max(timeInvestedValue, 0), 100)}
+                >
+                  <div
+                    className="summary__progress-fill summary__progress-fill--accent"
+                    style={{ width: `${timeInvestedFill}%` }}
+                  />
+                </div>
+              </div>
+              <span className="summary__hint">{hoursCompletedLabel}</span>
+            </div>
           </div>
         </section>
       )}
