@@ -42,8 +42,12 @@
 
 .reset-button:hover {
   border-color: var(--color-accent);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), var(--color-surface-elevated));
-  box-shadow: 0 14px 28px rgba(31, 111, 139, 0.2);
+  background: linear-gradient(
+    135deg,
+    var(--color-surface-hover-start),
+    var(--color-surface-hover-end)
+  );
+  box-shadow: 0 14px 26px rgba(31, 111, 139, 0.18);
 }
 
 .reset-button:disabled {
@@ -125,7 +129,7 @@
 }
 
 .week-selector select:hover {
-  background: rgba(255, 255, 255, 0.65);
+  background: var(--color-input-hover);
 }
 
 .week-selector select:focus {
