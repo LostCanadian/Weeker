@@ -171,7 +171,8 @@ const storageAdapter = {
       if (!legacyRaw) continue;
 
       try {
-        const legacyParsed = JSON.parse(legacyRaw) as WeekStorage;
+        const payload = readPayload(legacyRaw);
+        const legacyParsed = payload ? payload.weeks : JSON.parse(legacyRaw);
         const sanitized = sanitizeWeekStorage(legacyParsed);
         this.save(sanitized);
         window.localStorage.removeItem(legacyKey);
