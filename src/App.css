@@ -229,6 +229,26 @@ body {
   color: #52606d;
 }
 
+.planner__target-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.planner__target-display {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 1.1rem;
+  color: #1f2933;
+}
+
+.planner__target-display strong {
+  font-size: 1.5rem;
+  color: #1d4ed8;
+}
+
 .planner__field input {
   border-radius: 0.75rem;
   border: 1px solid rgba(148, 163, 184, 0.6);
