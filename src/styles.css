@@ -1,20 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&display=swap');
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
+:root {
+  color-scheme: light dark;
+  font-family: 'Cabin', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+
+  --font-family-base: 'Cabin', 'Segoe UI', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  --color-background: #ecf2ef;
+  --color-background-strong: #e3ebe7;
+  --color-surface: rgba(249, 252, 250, 0.92);
+  --color-surface-strong: #f7faf7;
+  --color-surface-elevated: #ffffff;
+  --color-text: #1e2e2b;
+  --color-text-muted: #4d615d;
+  --color-text-soft: #637773;
+  --color-border: rgba(63, 101, 93, 0.22);
+  --color-muted-surface: rgba(86, 114, 108, 0.16);
+  --color-accent: #1f6f8b;
+  --color-accent-strong: #155d75;
+  --color-accent-soft: rgba(31, 111, 139, 0.18);
+  --color-highlight: #2e8a62;
+  --color-highlight-soft: rgba(46, 138, 98, 0.22);
+  --color-tagline: #506762;
+  --color-disabled-bg: rgba(182, 197, 194, 0.38);
+  --color-disabled-text: rgba(74, 92, 88, 0.7);
+  --color-input-bg: rgba(233, 242, 239, 0.7);
+  --mist-pattern: url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2390a9a3' fill-opacity='0.2'%3E%3Ccircle cx='20' cy='20' r='2'/%3E%3Ccircle cx='80' cy='40' r='1.5'/%3E%3Ccircle cx='140' cy='30' r='2'/%3E%3Ccircle cx='40' cy='80' r='1.8'/%3E%3Ccircle cx='120' cy='90' r='1.6'/%3E%3Ccircle cx='60' cy='140' r='2'/%3E%3Ccircle cx='10' cy='120' r='1.4'/%3E%3Ccircle cx='150' cy='130' r='1.4'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #0d1516;
+    --color-background-strong: #141f21;
+    --color-surface: rgba(20, 33, 34, 0.9);
+    --color-surface-strong: #172426;
+    --color-surface-elevated: #1f2f31;
+    --color-text: #e4f1ef;
+    --color-text-muted: #a5bfb9;
+    --color-text-soft: #8aa6a1;
+    --color-border: rgba(124, 163, 156, 0.3);
+    --color-muted-surface: rgba(80, 109, 107, 0.32);
+    --color-accent: #3ba7c1;
+    --color-accent-strong: #57c0d7;
+    --color-accent-soft: rgba(59, 167, 193, 0.28);
+    --color-highlight: #4ac99e;
+    --color-highlight-soft: rgba(74, 201, 158, 0.28);
+    --color-tagline: #9ab3af;
+    --color-disabled-bg: rgba(36, 52, 53, 0.7);
+    --color-disabled-text: rgba(173, 199, 196, 0.72);
+    --color-input-bg: rgba(23, 36, 37, 0.85);
+    --mist-pattern: url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%235f7c79' fill-opacity='0.24'%3E%3Ccircle cx='20' cy='20' r='2'/%3E%3Ccircle cx='80' cy='40' r='1.5'/%3E%3Ccircle cx='140' cy='30' r='2'/%3E%3Ccircle cx='40' cy='80' r='1.8'/%3E%3Ccircle cx='120' cy='90' r='1.6'/%3E%3Ccircle cx='60' cy='140' r='2'/%3E%3Ccircle cx='10' cy='120' r='1.4'/%3E%3Ccircle cx='150' cy='130' r='1.4'/%3E%3C/g%3E%3C/svg%3E");
+  }
+}
+
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    sans-serif;
-  background-color: #f8fafc;
-  color: #0f172a;
+  font-family: var(--font-family-base);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  line-height: 1.6;
+  background-image: var(--mist-pattern),
+    linear-gradient(180deg, var(--color-background) 0%, var(--color-background-strong) 100%);
+  background-attachment: fixed;
+  background-size: 320px 320px, 100% 100%;
 }
 
 a {
-  color: inherit;
+  color: var(--color-accent);
   text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 button {
