@@ -69,6 +69,7 @@ const FocusNotes = ({
           {lines.length > 0 ? (
             lines.map((line: string, index: number) => (
               <div className="focus-card__notes-line" key={`${index}-${line}`}>
+                <span className="focus-card__notes-bullet" aria-hidden />
                 <span className="focus-card__notes-line-text">
                   {line.length > 0 ? line : '\u00A0'}
                 </span>
