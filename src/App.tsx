@@ -4,6 +4,7 @@ import {
   FormEvent,
   KeyboardEvent,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -21,6 +22,81 @@ import {
   getStartOfWeek,
   parseWeekKey,
 } from './utils/weekDates';
+
+type FocusNotesProps = {
+  note: string;
+  placeholder: string;
+  disabled: boolean;
+  onChange: (value: string) => void;
+  onBlur: (value: string) => void;
+};
+
+const FocusNotes = ({
+  note,
+  placeholder,
+  disabled,
+  onChange,
+  onBlur,
+}: FocusNotesProps) => {
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const overlayContentRef = useRef<HTMLDivElement | null>(null);
+
+  const syncOverlayScroll = () => {
+    if (!textareaRef.current || !overlayContentRef.current) {
+      return;
+    }
+
+    overlayContentRef.current.style.transform = `translateY(-${textareaRef.current.scrollTop}px)`;
+  };
+
+  useLayoutEffect(() => {
+    syncOverlayScroll();
+  }, [note]);
+
+  const lines = note.length > 0 ? note.split('\n') : [];
+  const fieldClassName = ['focus-card__notes-field'];
+  if (disabled) {
+    fieldClassName.push('focus-card__notes-field--disabled');
+  }
+
+  return (
+    <div className={fieldClassName.join(' ')}>
+      <div className="focus-card__notes-overlay" aria-hidden>
+        <div
+          ref={overlayContentRef}
+          className="focus-card__notes-overlay-content"
+        >
+          {lines.length > 0 ? (
+            lines.map((line: string, index: number) => (
+              <div className="focus-card__notes-line" key={`${index}-${line}`}>
+                <span className="focus-card__notes-line-text">
+                  {line.length > 0 ? line : '\u00A0'}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="focus-card__notes-placeholder">{placeholder}</div>
+          )}
+        </div>
+      </div>
+      <textarea
+        ref={textareaRef}
+        value={note}
+        onChange={(event: ChangeEvent<HTMLTextAreaElement>) =>
+          onChange(event.target.value)
+        }
+        onBlur={(event: FocusEvent<HTMLTextAreaElement>) =>
+          onBlur(event.currentTarget.value)
+        }
+        onScroll={syncOverlayScroll}
+        placeholder={placeholder}
+        rows={3}
+        disabled={disabled}
+        className="focus-card__notes-textarea"
+      />
+    </div>
+  );
+};
 
 function App() {
   const [focusItems, setFocusItems] = useState<FocusItem[]>(() =>
@@ -792,20 +868,16 @@ function App() {
 
                   <label className="focus-card__notes">
                     <span>Notes</span>
-                    <textarea
-                      value={item.note}
-                      onChange={(event: ChangeEvent<HTMLTextAreaElement>) =>
-                        updateFocusNote(item.id, event.target.value)
-                      }
-                      onBlur={(event: FocusEvent<HTMLTextAreaElement>) =>
-                        updateFocusNote(
-                          item.id,
-                          event.currentTarget.value.trimEnd(),
-                        )
-                      }
+                    <FocusNotes
+                      note={item.note}
                       placeholder="Jot down highlights, learnings, or next steps."
-                      rows={3}
                       disabled={!canEditCurrentWeek}
+                      onChange={(value: string) =>
+                        updateFocusNote(item.id, value)
+                      }
+                      onBlur={(value: string) =>
+                        updateFocusNote(item.id, value.trimEnd())
+                      }
                     />
                   </label>
                 </article>
