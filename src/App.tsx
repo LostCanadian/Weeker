@@ -10,283 +10,20 @@ import {
 } from 'react';
 import './App.css';
 
-type FocusItem = {
-  id: string;
-  title: string;
-  targetHours: number;
-  spentHours: number;
-  note: string;
-};
-
-const initialFocus: FocusItem[] = [];
-
-type WeekStorage = Record<string, FocusItem[]>;
-
-type PersistedWeeksPayload = {
-  schemaVersion: number;
-  appVersion: string;
-  weeks: WeekStorage;
-};
-
-const STORAGE_SCHEMA_VERSION = 2;
-
-const STORAGE_NAMESPACE = (() => {
-  const explicit = import.meta.env.VITE_STORAGE_NAMESPACE?.trim();
-  if (explicit) {
-    return explicit;
-  }
-
-  const mode = import.meta.env.MODE;
-  switch (mode) {
-    case 'development':
-      return 'dev';
-    case 'test':
-      return 'test';
-    case 'production':
-    default:
-      return 'prod';
-  }
-})();
-
-const STORAGE_KEY = `weeker:${STORAGE_NAMESPACE}:weeks:v${STORAGE_SCHEMA_VERSION}`;
-const LEGACY_STORAGE_KEYS = [
-  'weeker:weeks:v1',
-  `weeker:${STORAGE_NAMESPACE}:weeks:v1`,
-];
-const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
-const HOUR_LENGTH_MS = 60 * 60 * 1000;
-
-const cloneFocusItems = (items: FocusItem[]): FocusItem[] =>
-  items.map((item) => ({ ...item }));
-
-const sanitizeFocusItems = (items: unknown): FocusItem[] => {
-  if (!Array.isArray(items)) return [];
-
-  const sanitized: FocusItem[] = [];
-
-  for (const raw of items) {
-    if (!raw || typeof raw !== 'object') continue;
-
-    const item = raw as Record<string, unknown>;
-    const id = typeof item.id === 'string' ? item.id : null;
-    const title = typeof item.title === 'string' ? item.title : null;
-    const targetHours = typeof item.targetHours === 'number' ? item.targetHours : null;
-    const spentHours = typeof item.spentHours === 'number' ? item.spentHours : null;
-
-    if (!id || !title || targetHours === null || spentHours === null) {
-      continue;
-    }
-
-    sanitized.push({
-      id,
-      title,
-      targetHours: Number.isFinite(targetHours) ? targetHours : 0,
-      spentHours: Number.isFinite(spentHours) ? spentHours : 0,
-      note: typeof item.note === 'string' ? item.note : '',
-    });
-  }
-
-  return sanitized;
-};
-
-const sanitizeWeekStorage = (value: unknown): WeekStorage => {
-  if (!value || typeof value !== 'object') {
-    return {};
-  }
-
-  return Object.fromEntries(
-    Object.entries(value as Record<string, unknown>).flatMap(
-      ([weekKey, items]) => {
-        if (typeof weekKey !== 'string' || !Array.isArray(items)) {
-          return [];
-        }
-
-        return [[weekKey, cloneFocusItems(sanitizeFocusItems(items))]];
-      },
-    ),
-  );
-};
-
-const storageAdapter = {
-  load(): WeekStorage {
-    if (typeof window === 'undefined') return {};
-
-    const readPayload = (raw: string | null): PersistedWeeksPayload | null => {
-      if (!raw) return null;
-
-      try {
-        const parsed = JSON.parse(raw) as PersistedWeeksPayload;
-        if (
-          typeof parsed !== 'object' ||
-          parsed === null ||
-          typeof parsed.schemaVersion !== 'number' ||
-          typeof parsed.weeks !== 'object'
-        ) {
-          return null;
-        }
-
-        if (parsed.schemaVersion !== STORAGE_SCHEMA_VERSION) {
-          console.warn(
-            `Unsupported storage schema version ${parsed.schemaVersion}; expected ${STORAGE_SCHEMA_VERSION}.`,
-          );
-        }
-
-        return parsed;
-      } catch (error) {
-        console.warn('Unable to parse stored weekly focus data.', error);
-        return null;
-      }
-    };
-
-    const activeRaw = window.localStorage.getItem(STORAGE_KEY);
-    const activePayload = readPayload(activeRaw);
-    if (activePayload) {
-      return sanitizeWeekStorage(activePayload.weeks);
-    }
-
-    for (const legacyKey of LEGACY_STORAGE_KEYS) {
-      const legacyRaw = window.localStorage.getItem(legacyKey);
-      if (!legacyRaw) continue;
-
-      try {
-        const payload = readPayload(legacyRaw);
-        const legacyParsed = payload ? payload.weeks : JSON.parse(legacyRaw);
-        const sanitized = sanitizeWeekStorage(legacyParsed);
-        this.save(sanitized);
-        window.localStorage.removeItem(legacyKey);
-        return sanitized;
-      } catch (error) {
-        console.warn(
-          `Unable to migrate legacy weekly focus data from ${legacyKey}.`,
-          error,
-        );
-      }
-    }
-
-    return {};
-  },
-  save(weeks: WeekStorage) {
-    if (typeof window === 'undefined') return;
-
-    const payload: PersistedWeeksPayload = {
-      schemaVersion: STORAGE_SCHEMA_VERSION,
-      appVersion: APP_VERSION,
-      weeks: sanitizeWeekStorage(weeks),
-    };
-
-    try {
-      const serialized = JSON.stringify(payload);
-      window.localStorage.setItem(STORAGE_KEY, serialized);
-    } catch (error) {
-      console.warn('Unable to persist weekly focus data.', error);
-    }
-  },
-};
-
-const normalizeToStartOfDay = (date: Date): Date => {
-  const normalized = new Date(date);
-  normalized.setHours(0, 0, 0, 0);
-  return normalized;
-};
-
-const addDays = (date: Date, days: number): Date => {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-};
-
-const getStartOfWeek = (date: Date): Date => {
-  const result = new Date(date);
-  const day = result.getDay();
-  const diff = (day + 6) % 7; // Shift so Monday is the first day of the week
-  result.setHours(0, 0, 0, 0);
-  result.setDate(result.getDate() - diff);
-  return result;
-};
-
-const getEndOfWeek = (start: Date): Date => {
-  const end = new Date(start);
-  end.setDate(end.getDate() + 6);
-  end.setHours(23, 59, 59, 999);
-  return end;
-};
-
-const getNextWeekStart = (start: Date): Date =>
-  normalizeToStartOfDay(addDays(start, 7));
-
-const getWeekDurationMs = (start: Date): number => {
-  const normalizedStart = normalizeToStartOfDay(start);
-  const nextWeekStart = getNextWeekStart(normalizedStart);
-  return nextWeekStart.getTime() - normalizedStart.getTime();
-};
-
-const clampToWeek = (start: Date, value: number): number => {
-  const normalizedStart = normalizeToStartOfDay(start);
-  const nextWeekStart = getNextWeekStart(normalizedStart);
-  return Math.min(
-    Math.max(value, normalizedStart.getTime()),
-    nextWeekStart.getTime(),
-  );
-};
-
-const getElapsedWeekHours = (start: Date, today: Date): number => {
-  const normalizedStart = normalizeToStartOfDay(start);
-  const clampedNow = clampToWeek(normalizedStart, today.getTime());
-  return (clampedNow - normalizedStart.getTime()) / HOUR_LENGTH_MS;
-};
-
-const formatWeekKey = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-const parseWeekKey = (key: string): Date => {
-  const [year, month, day] = key.split('-').map(Number);
-  return normalizeToStartOfDay(new Date(year, month - 1, day));
-};
-
-const formatWeekLabel = (start: Date): string => {
-  const end = getEndOfWeek(start);
-  const dateFormatter = new Intl.DateTimeFormat(undefined, {
-    month: 'short',
-    day: 'numeric',
-  });
-  const startLabel = dateFormatter.format(start);
-  const endLabel = dateFormatter.format(end);
-  const yearLabel =
-    start.getFullYear() === end.getFullYear()
-      ? String(start.getFullYear())
-      : `${start.getFullYear()} / ${end.getFullYear()}`;
-
-  return `${startLabel} – ${endLabel}, ${yearLabel}`;
-};
-
-const areFocusItemsEqual = (
-  left: FocusItem[] | undefined,
-  right: FocusItem[] | undefined,
-): boolean => {
-  if (left === right) return true;
-  if (!left || !right) return false;
-  if (left.length !== right.length) return false;
-
-  for (let index = 0; index < left.length; index += 1) {
-    const a = left[index];
-    const b = right[index];
-    if (
-      a.id !== b.id ||
-      a.title !== b.title ||
-      a.targetHours !== b.targetHours ||
-      a.spentHours !== b.spentHours ||
-      a.note !== b.note
-    ) {
-      return false;
-    }
-  }
-
-  return true;
-};
+import { FocusItem, WeekStorage, initialFocus } from './focus/types';
+import { areFocusItemsEqual, cloneFocusItems } from './focus/utils';
+import { weeksStorage } from './storage/weeksStorage';
+import {
+  calculateWeekProgressPercent,
+  formatWeekKey,
+  formatWeekLabel,
+  getElapsedWeekHours,
+  getEndOfWeek,
+  getStartOfWeek,
+  getWeekDurationMs,
+  HOUR_LENGTH_MS,
+  parseWeekKey,
+} from './utils/weekDates';
 
 function App() {
   const [focusItems, setFocusItems] = useState<FocusItem[]>(() =>
@@ -334,7 +71,7 @@ function App() {
   }, [currentWeekKey]);
 
   useEffect(() => {
-    const storedWeeks = storageAdapter.load();
+    const storedWeeks = weeksStorage.load();
 
     setWeeksData(storedWeeks);
     setStorageReady(true);
@@ -393,7 +130,7 @@ function App() {
   useEffect(() => {
     if (!storageReady) return;
 
-    storageAdapter.save(weeksData);
+    weeksStorage.save(weeksData);
   }, [weeksData, storageReady]);
 
   const sortedWeekKeys = useMemo(
@@ -427,24 +164,11 @@ function App() {
     () => getEndOfWeek(selectedWeekStart),
     [selectedWeekStart],
   );
-  const weekProgressPercent = useMemo(() => {
-    if (isCurrentWeek) {
-      const duration = getWeekDurationMs(selectedWeekStart);
-      if (duration <= 0) {
-        return 0;
-      }
-
-      const clampedNow = clampToWeek(selectedWeekStart, today.getTime());
-      const elapsed = clampedNow - selectedWeekStart.getTime();
-      return (elapsed / duration) * 100;
-    }
-
-    if (today.getTime() < selectedWeekStart.getTime()) {
-      return 0;
-    }
-
-    return 100;
-  }, [isCurrentWeek, selectedWeekStart, today]);
+  const weekProgressPercent = useMemo(
+    () =>
+      calculateWeekProgressPercent(selectedWeekStart, today, isCurrentWeek),
+    [isCurrentWeek, selectedWeekStart, today],
+  );
 
   const hoursCompletedLabel = useMemo(() => {
     if (!isCurrentWeek) {
