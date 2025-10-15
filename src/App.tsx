@@ -414,8 +414,15 @@ function App() {
     weeksData,
     currentWeekKey,
   );
+  const hasAvailableWeeks = sortedWeekKeys.length > 0;
+  const selectedWeekHasData = Object.prototype.hasOwnProperty.call(
+    weeksData,
+    selectedWeekKey,
+  );
+  const shouldShowWeekContext = hasAvailableWeeks || currentWeekExists;
   const canEditCurrentWeek = isCurrentWeek && currentWeekExists;
   const showStartWeekButton = storageReady && !currentWeekExists;
+  const showTagline = !currentWeekExists;
   const selectedWeekEnd = useMemo(
     () => getEndOfWeek(selectedWeekStart),
     [selectedWeekStart],
@@ -731,9 +738,11 @@ function App() {
       <header className="app__header">
         <div>
           <h1>Weeker</h1>
-          <p className="app__tagline">
-            Set weekly themes, focus your time, and celebrate what you achieve.
-          </p>
+          {showTagline && (
+            <p className="app__tagline">
+              Set weekly themes, focus your time, and celebrate what you achieve.
+            </p>
+          )}
         </div>
         {showStartWeekButton && (
           <button
@@ -746,124 +755,129 @@ function App() {
         )}
       </header>
 
-      <section className="week-context" aria-label="Week overview">
-        <div className="week-context__info">
-          <span className="week-context__label">Week of</span>
-          <strong className="week-context__title">{selectedWeekLabel}</strong>
-          <span className="week-context__day">{currentDayLabel}</span>
-        </div>
-        <div className="week-context__actions">
-          <label className="week-selector">
-            <span className="week-selector__label">Review week</span>
-            <select
-              value={weekSelectValue}
-              onChange={(event) => setSelectedWeekKey(event.target.value)}
-              disabled={sortedWeekKeys.length === 0}
-            >
-              <option value="" disabled>
-                {reviewPlaceholder}
-              </option>
-              {sortedWeekKeys.map((weekKey) => {
-                const weekStart = parseWeekKey(weekKey);
-                return (
-                  <option key={weekKey} value={weekKey}>
-                    {formatWeekLabel(weekStart)}
-                  </option>
-                );
-              })}
-            </select>
-          </label>
-          {!isCurrentWeek && (
-            <span className="week-context__badge" role="status">
-              Viewing a previous week
-            </span>
-          )}
-        </div>
-      </section>
+      {shouldShowWeekContext && (
+        <section className="week-context" aria-label="Week overview">
+          <div className="week-context__info">
+            <span className="week-context__label">Week of</span>
+            <strong className="week-context__title">{selectedWeekLabel}</strong>
+            <span className="week-context__day">{currentDayLabel}</span>
+          </div>
+          <div className="week-context__actions">
+            <label className="week-selector">
+              <span className="week-selector__label">Review week</span>
+              <select
+                value={weekSelectValue}
+                onChange={(event) => setSelectedWeekKey(event.target.value)}
+                disabled={sortedWeekKeys.length === 0}
+              >
+                <option value="" disabled>
+                  {reviewPlaceholder}
+                </option>
+                {sortedWeekKeys.map((weekKey) => {
+                  const weekStart = parseWeekKey(weekKey);
+                  return (
+                    <option key={weekKey} value={weekKey}>
+                      {formatWeekLabel(weekStart)}
+                    </option>
+                  );
+                })}
+              </select>
+            </label>
+            {!isCurrentWeek && (
+              <span className="week-context__badge" role="status">
+                Viewing a previous week
+              </span>
+            )}
+          </div>
+        </section>
+      )}
 
-      <section className="summary" aria-label="Weekly focus summary">
-        <div>
-          <span className="summary__label">Total target</span>
-          <strong>{summary.target.toFixed(1)}h</strong>
-        </div>
-        <div>
-          <span className="summary__label">Time invested</span>
-          <strong>{summary.spent.toFixed(1)}h</strong>
-        </div>
-        <div>
-          <span className="summary__label">Achieved focus areas</span>
-          <strong>
-            {summary.achievedCount} / {focusItems.length}
-          </strong>
-        </div>
-        <div>
-          <span className="summary__label">Week progress</span>
-          <strong>{weekProgressPercent.toFixed(0)}%</strong>
-          <span className="summary__hint">{hoursCompletedLabel}</span>
-        </div>
-      </section>
+      {selectedWeekHasData && (
+        <section className="summary" aria-label="Weekly focus summary">
+          <div>
+            <span className="summary__label">Total target</span>
+            <strong>{summary.target.toFixed(1)}h</strong>
+          </div>
+          <div>
+            <span className="summary__label">Time invested</span>
+            <strong>{summary.spent.toFixed(1)}h</strong>
+          </div>
+          <div>
+            <span className="summary__label">Achieved focus areas</span>
+            <strong>
+              {summary.achievedCount} / {focusItems.length}
+            </strong>
+          </div>
+          <div>
+            <span className="summary__label">Week progress</span>
+            <strong>{weekProgressPercent.toFixed(0)}%</strong>
+            <span className="summary__hint">{hoursCompletedLabel}</span>
+          </div>
+        </section>
+      )}
 
-      <section className="planner" aria-label="Plan weekly focus areas">
-        <form className="planner__form" onSubmit={handleAddFocus}>
-          <h2>Add a focus card</h2>
-          <label className="planner__field">
-            <span>Focus area</span>
-            <input
-              type="text"
-              placeholder="e.g. Product strategy"
-              value={newTitle}
-              onChange={(event) => setNewTitle(event.target.value)}
-              disabled={!canEditCurrentWeek}
-              required
-            />
-          </label>
-          <div className="planner__field">
-            <span>Target time (hours)</span>
-            <div className="planner__target-control">
-              <div className="planner__target-display" aria-live="polite">
-                <strong>{newTarget.toFixed(1)}h</strong>
-              </div>
-              <div className="actions__group">
-                <button
-                  type="button"
-                  onClick={() => adjustNewTarget(-0.5)}
-                  disabled={!canEditCurrentWeek || newTarget <= 0.5}
-                  aria-label="Decrease target by 0.5 hours"
-                >
-                  -0.5h
-                </button>
-                <button
-                  type="button"
-                  onClick={() => adjustNewTarget(0.5)}
-                  disabled={!canEditCurrentWeek}
-                  aria-label="Increase target by 0.5 hours"
-                >
-                  +0.5h
-                </button>
-                <button
-                  type="button"
-                  onClick={() => adjustNewTarget(1)}
-                  disabled={!canEditCurrentWeek}
-                  aria-label="Increase target by 1 hour"
-                >
-                  +1h
-                </button>
+      {selectedWeekHasData && (
+        <section className="planner" aria-label="Plan weekly focus areas">
+          <form className="planner__form" onSubmit={handleAddFocus}>
+            <h2>Add a focus card</h2>
+            <label className="planner__field">
+              <span>Focus area</span>
+              <input
+                type="text"
+                placeholder="e.g. Product strategy"
+                value={newTitle}
+                onChange={(event) => setNewTitle(event.target.value)}
+                disabled={!canEditCurrentWeek}
+                required
+              />
+            </label>
+            <div className="planner__field">
+              <span>Target time (hours)</span>
+              <div className="planner__target-control">
+                <div className="planner__target-display" aria-live="polite">
+                  <strong>{newTarget.toFixed(1)}h</strong>
+                </div>
+                <div className="actions__group">
+                  <button
+                    type="button"
+                    onClick={() => adjustNewTarget(-0.5)}
+                    disabled={!canEditCurrentWeek || newTarget <= 0.5}
+                    aria-label="Decrease target by 0.5 hours"
+                  >
+                    -0.5h
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => adjustNewTarget(0.5)}
+                    disabled={!canEditCurrentWeek}
+                    aria-label="Increase target by 0.5 hours"
+                  >
+                    +0.5h
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => adjustNewTarget(1)}
+                    disabled={!canEditCurrentWeek}
+                    aria-label="Increase target by 1 hour"
+                  >
+                    +1h
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-          <button
-            type="submit"
-            className="primary-button"
-            disabled={!canEditCurrentWeek}
-          >
-            Add focus card
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={!canEditCurrentWeek}
+            >
+              Add focus card
+            </button>
+          </form>
 
-        <div className="planner__grid">
-          {focusItems.length === 0 ? (
-            <p className="empty-state">
-              Start your week by creating a focus card above. Track how you spend
+          <div className="planner__grid">
+            {focusItems.length === 0 ? (
+              <p className="empty-state">
+                Start your week by creating a focus card above. Track how you spend
               your time and mark what you achieve.
             </p>
           ) : (
@@ -1023,8 +1037,9 @@ function App() {
               );
             })
           )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
     </main>
   );
 }
