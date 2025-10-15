@@ -5,8 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "types": ["node"]
+    "isolatedModules": true
   },
   "include": ["vite.config.ts"]
 }
