@@ -1,4 +1,12 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  KeyboardEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import './App.css';
 
 type FocusItem = {
@@ -308,6 +316,16 @@ function App() {
   const [today, setToday] = useState(() => new Date());
   const focusItemsRef = useRef<FocusItem[]>(focusItems);
   const suppressNextPersistRef = useRef(false);
+  const [activeEdit, setActiveEdit] = useState<
+    | {
+        id: string;
+        field: 'title' | 'target';
+        value: string;
+      }
+    | null
+  >(null);
+  const cancelEditRef = useRef(false);
+  const editInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -555,6 +573,124 @@ function App() {
     updateSpentHours(id, current.spentHours + delta);
   };
 
+  const updateFocusTitle = (id: string, title: string) => {
+    if (!isCurrentWeek) return;
+
+    const trimmed = title.trim();
+    if (!trimmed) return;
+
+    setFocusItems((items: FocusItem[]) =>
+      items.map((item: FocusItem) =>
+        item.id === id
+          ? {
+              ...item,
+              title: trimmed,
+            }
+          : item,
+      ),
+    );
+  };
+
+  const updateTargetHours = (id: string, target: number) => {
+    if (!isCurrentWeek) return;
+
+    if (Number.isNaN(target) || target <= 0) {
+      return;
+    }
+
+    const normalized = Math.min(Math.round(target * 4) / 4, 80);
+
+    setFocusItems((items: FocusItem[]) =>
+      items.map((item: FocusItem) =>
+        item.id === id
+          ? {
+              ...item,
+              targetHours: normalized,
+            }
+          : item,
+      ),
+    );
+  };
+
+  useEffect(() => {
+    if (!activeEdit) return;
+
+    const node = editInputRef.current;
+    if (!node) return;
+
+    const raf = typeof window !== 'undefined' ? window.requestAnimationFrame : null;
+    if (raf) {
+      raf(() => {
+        node.focus();
+        node.select();
+      });
+      return;
+    }
+
+    node.focus();
+    node.select();
+  }, [activeEdit]);
+
+  const startEditing = (item: FocusItem, field: 'title' | 'target') => {
+    if (!isCurrentWeek) return;
+
+    cancelEditRef.current = false;
+    setActiveEdit({
+      id: item.id,
+      field,
+      value: field === 'title' ? item.title : item.targetHours.toString(),
+    });
+  };
+
+  const cancelEditing = () => {
+    cancelEditRef.current = true;
+    setActiveEdit(null);
+  };
+
+  const commitActiveEdit = () => {
+    if (!activeEdit) return;
+
+    const { id, field, value } = activeEdit;
+
+    if (field === 'title') {
+      const trimmed = value.trim();
+      if (trimmed) {
+        updateFocusTitle(id, trimmed);
+      }
+    } else {
+      const parsed = Number(value);
+      if (!Number.isNaN(parsed) && parsed > 0) {
+        updateTargetHours(id, parsed);
+      }
+    }
+
+    setActiveEdit(null);
+  };
+
+  const handleEditChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setActiveEdit((prev) => (prev ? { ...prev, value } : prev));
+  };
+
+  const handleEditKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      commitActiveEdit();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      cancelEditing();
+    }
+  };
+
+  const handleEditBlur = () => {
+    if (cancelEditRef.current) {
+      cancelEditRef.current = false;
+      return;
+    }
+
+    commitActiveEdit();
+  };
+
   const removeFocusItem = (id: string) => {
     if (!isCurrentWeek) return;
 
@@ -707,10 +843,66 @@ function App() {
                 >
                   <header className="focus-card__header">
                     <div>
-                      <h3>{item.title}</h3>
+                      <h3>
+                        {activeEdit?.id === item.id && activeEdit.field === 'title' ? (
+                          <input
+                            ref={editInputRef}
+                            className="focus-card__editable-input"
+                            type="text"
+                            value={activeEdit.value}
+                            onChange={handleEditChange}
+                            onBlur={handleEditBlur}
+                            onKeyDown={handleEditKeyDown}
+                            aria-label="Focus title"
+                            maxLength={80}
+                          />
+                        ) : (
+                          <button
+                            type="button"
+                            className="focus-card__editable focus-card__editable--title"
+                            onClick={() => startEditing(item, 'title')}
+                            disabled={!isCurrentWeek}
+                            aria-label={`Edit title for ${item.title}`}
+                          >
+                            {item.title}
+                          </button>
+                        )}
+                      </h3>
                       <p className="focus-card__target">
-                        Target {item.targetHours.toFixed(1)}h ·{' '}
-                        {isAchieved ? 'Achieved' : 'In progress'}
+                        <span>Target</span>
+                        {activeEdit?.id === item.id && activeEdit.field === 'target' ? (
+                          <span className="focus-card__target-editor">
+                            <input
+                              ref={editInputRef}
+                              className="focus-card__editable-input focus-card__target-input"
+                              type="number"
+                              step={0.25}
+                              min={0.25}
+                              value={activeEdit.value}
+                              onChange={handleEditChange}
+                              onBlur={handleEditBlur}
+                              onKeyDown={handleEditKeyDown}
+                              aria-label="Target hours"
+                            />
+                            <span className="focus-card__target-suffix" aria-hidden>
+                              h
+                            </span>
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            className="focus-card__editable focus-card__editable--target"
+                            onClick={() => startEditing(item, 'target')}
+                            disabled={!isCurrentWeek}
+                            aria-label={`Edit target hours for ${item.title}`}
+                          >
+                            {item.targetHours.toFixed(1)}h
+                          </button>
+                        )}
+                        <span className="focus-card__target-divider" aria-hidden>
+                          ·
+                        </span>
+                        <span>{isAchieved ? 'Achieved' : 'In progress'}</span>
                       </p>
                     </div>
                     <button
