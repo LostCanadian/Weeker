@@ -600,6 +600,14 @@ function App() {
                 <div className="actions__group">
                   <button
                     type="button"
+                    onClick={() => adjustNewTarget(-1)}
+                    disabled={!canEditCurrentWeek || newTarget <= 1}
+                    aria-label="Decrease target by 1 hour"
+                  >
+                    -1h
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => adjustNewTarget(-0.5)}
                     disabled={!canEditCurrentWeek || newTarget <= 0.5}
                     aria-label="Decrease target by 0.5 hours"
@@ -746,6 +754,13 @@ function App() {
                   </div>
                   <div className="focus-card__actions">
                     <div className="actions__group">
+                      <button
+                        type="button"
+                        onClick={() => adjustSpent(item.id, -1)}
+                        disabled={!canEditCurrentWeek || item.spentHours < 1}
+                      >
+                        -1h
+                      </button>
                       <button
                         type="button"
                         onClick={() => adjustSpent(item.id, -0.5)}
