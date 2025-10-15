@@ -307,6 +307,7 @@ function App() {
   const [storageReady, setStorageReady] = useState(false);
   const [today, setToday] = useState(() => new Date());
   const focusItemsRef = useRef<FocusItem[]>(focusItems);
+  const suppressNextPersistRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -357,6 +358,7 @@ function App() {
 
     if (storedItems) {
       if (!areFocusItemsEqual(storedItems, currentItems)) {
+        suppressNextPersistRef.current = true;
         setFocusItems(cloneFocusItems(storedItems));
       }
       return;
@@ -368,6 +370,7 @@ function App() {
         spentHours: 0,
       }));
       focusItemsRef.current = baseItems;
+      suppressNextPersistRef.current = true;
       setFocusItems(baseItems);
       setWeeksData((prev: WeekStorage) => ({
         ...prev,
@@ -377,6 +380,7 @@ function App() {
     }
 
     if (currentItems.length > 0) {
+      suppressNextPersistRef.current = true;
       focusItemsRef.current = [];
       setFocusItems([]);
     }
@@ -384,6 +388,11 @@ function App() {
 
   useEffect(() => {
     if (!storageReady) return;
+
+    if (suppressNextPersistRef.current) {
+      suppressNextPersistRef.current = false;
+      return;
+    }
 
     setWeeksData((prev: WeekStorage) => {
       const previousItems = prev[selectedWeekKey];
