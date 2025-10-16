@@ -565,8 +565,16 @@ function App() {
     commitActiveEdit();
   };
 
-  const removeFocusItem = (id: string) => {
+  const removeFocusItem = (id: string, title: string) => {
     if (!canEditCurrentWeek) return;
+
+    const confirmed = window.confirm(
+      `Remove focus card "${title || 'Untitled'}"? This action cannot be undone.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
 
     setFocusItems((items: FocusItem[]) =>
       items.filter((item: FocusItem) => item.id !== id),
@@ -866,7 +874,7 @@ function App() {
                     <button
                       type="button"
                       className="icon-button"
-                      onClick={() => removeFocusItem(item.id)}
+                      onClick={() => removeFocusItem(item.id, item.title)}
                       disabled={!canEditCurrentWeek}
                       aria-label={`Remove ${item.title}`}
                     >
