@@ -802,15 +802,26 @@ function App() {
                 ? Math.min((item.spentHours / item.targetHours) * 100, 120)
                 : 0;
               const focusIcon = getFocusIcon(item.title);
+              const isEditingTitle =
+                activeEdit?.id === item.id && activeEdit.field === 'title';
+              const focusCardClassNames = ['focus-card'];
+
+              if (isAchieved) {
+                focusCardClassNames.push('focus-card--achieved');
+              }
+
+              if (isEditingTitle) {
+                focusCardClassNames.push('focus-card--editing-title');
+              }
 
               return (
                 <article
                   key={item.id}
-                  className={`focus-card${isAchieved ? ' focus-card--achieved' : ''}`}
+                  className={focusCardClassNames.join(' ')}
                   aria-label={`${item.title} focus card`}
                 >
                   <header className="focus-card__header">
-                    <div>
+                    <div className="focus-card__header-content">
                       <h3>
                         {activeEdit?.id === item.id && activeEdit.field === 'title' ? (
                           <input
