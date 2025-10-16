@@ -394,6 +394,17 @@
   gap: 1rem;
 }
 
+.focus-card__header-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.focus-card__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
 .focus-card__header h3 {
   margin: 0;
   font-size: 1.35rem;
