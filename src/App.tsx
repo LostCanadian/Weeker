@@ -13,6 +13,7 @@ import {
 import './App.css';
 
 import { FocusItem, WeekStorage, initialFocus } from './focus/types';
+import { getFocusIcon } from './focus/focusIcons';
 import { areFocusItemsEqual, cloneFocusItems } from './focus/utils';
 import { weeksStorage } from './storage/weeksStorage';
 import {
@@ -800,6 +801,7 @@ function App() {
               const progressPercent = item.targetHours
                 ? Math.min((item.spentHours / item.targetHours) * 100, 120)
                 : 0;
+              const focusIcon = getFocusIcon(item.title);
 
               return (
                 <article
@@ -871,15 +873,20 @@ function App() {
                         <span>{isAchieved ? 'Achieved' : 'In progress'}</span>
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      className="icon-button"
-                      onClick={() => removeFocusItem(item.id, item.title)}
-                      disabled={!canEditCurrentWeek}
-                      aria-label={`Remove ${item.title}`}
-                    >
-                      ×
-                    </button>
+                    <div className="focus-card__header-actions">
+                      <span className="focus-card__icon" aria-hidden>
+                        {focusIcon}
+                      </span>
+                      <button
+                        type="button"
+                        className="icon-button"
+                        onClick={() => removeFocusItem(item.id, item.title)}
+                        disabled={!canEditCurrentWeek}
+                        aria-label={`Remove ${item.title}`}
+                      >
+                        ×
+                      </button>
+                    </div>
                   </header>
 
                   <div className="focus-card__progress" role="presentation">
