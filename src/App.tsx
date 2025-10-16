@@ -66,27 +66,45 @@ const FocusNotes = ({
     }
   }, []);
 
-  const syncOverlayScroll = () => {
+  const syncOverlayScroll = useCallback(() => {
     if (!textareaRef.current || !overlayContentRef.current) {
       return;
     }
 
     overlayContentRef.current.style.transform = `translateY(-${textareaRef.current.scrollTop}px)`;
-  };
+  }, []);
+
+  const adjustTextareaHeight = useCallback(() => {
+    if (!textareaRef.current) {
+      return;
+    }
+
+    const textarea = textareaRef.current;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+
+    syncOverlayScroll();
+  }, [syncOverlayScroll]);
 
   useLayoutEffect(() => {
-    syncOverlayScroll();
+    adjustTextareaHeight();
     updateLineHeight();
-  }, [note, updateLineHeight]);
+  }, [note, adjustTextareaHeight, updateLineHeight]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
 
-    const handleResize = () => updateLineHeight();
+    const handleResize = () => {
+      updateLineHeight();
+      adjustTextareaHeight();
+    };
     window.addEventListener('resize', handleResize);
 
     const fontSet = (document as Document & { fonts?: FontFaceSet }).fonts;
-    const handleFontLoad = () => updateLineHeight();
+    const handleFontLoad = () => {
+      updateLineHeight();
+      adjustTextareaHeight();
+    };
 
     fontSet?.addEventListener('loadingdone', handleFontLoad);
 
@@ -94,7 +112,7 @@ const FocusNotes = ({
       window.removeEventListener('resize', handleResize);
       fontSet?.removeEventListener('loadingdone', handleFontLoad);
     };
-  }, [updateLineHeight]);
+  }, [adjustTextareaHeight, updateLineHeight]);
 
   const lines = note.length > 0 ? note.split('\n') : [];
   const fieldClassName = ['focus-card__notes-field'];

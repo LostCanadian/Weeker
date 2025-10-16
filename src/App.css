@@ -618,7 +618,8 @@
   z-index: 1;
   display: block;
   width: 100%;
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
   min-height: 3.5rem;
   border: none;
   border-radius: 0.75rem;
@@ -683,6 +684,9 @@
 .focus-card__notes-line-text {
   display: block;
   white-space: pre-wrap;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .focus-card__notes-placeholder {
