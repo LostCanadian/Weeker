@@ -390,7 +390,7 @@
 .focus-card__header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
   position: relative;
 }
@@ -422,7 +422,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  align-items: center;
+  align-items: flex-start;
   z-index: 0;
   pointer-events: none;
 }
