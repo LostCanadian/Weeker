@@ -11,11 +11,11 @@ const sportsEntries: KeywordIconEntry[] = [
   { icon: '🏃‍♂️', keywords: ['marathon', 'race', 'training', 'tempo'] },
   { icon: '🥾', keywords: ['hike', 'hiking', 'trail', 'summit'] },
   { icon: '🚴', keywords: ['bike', 'biking', 'cycling', 'ride'] },
-  { icon: '🚴‍♂️', keywords: ['road', 'peloton', 'training', 'cadence'] },
-  { icon: '🚵', keywords: ['mountain', 'trail', 'mtb', 'downhill'] },
-  { icon: '🚲', keywords: ['bicycle', 'commute', 'pedal', 'cycle'] },
+  { icon: '🚴‍♂️', keywords: ['road', 'peloton', 'training', 'cadence', 'pedal', 'pedalling', 'bike', 'biking', 'ride'] },
+  { icon: '🚵', keywords: ['mountain', 'trail', 'mtb', 'downhill', 'biking', 'bike', 'pedal', 'pedalling', 'ride'] },
+  { icon: '🚲', keywords: ['bicycle', 'commute', 'pedal', 'cycle', 'bike'] },
   { icon: '🏊', keywords: ['swim', 'swimming', 'pool', 'laps'] },
-  { icon: '🧗', keywords: ['climb', 'climbing', 'boulder', 'crag'] },
+  { icon: '🧗', keywords: ['climb', 'climbing', 'boulder', 'crag', 'bouldering'] },
   { icon: '🧘', keywords: ['yoga', 'stretch', 'balance', 'pose'] },
   { icon: '🧘‍♀️', keywords: ['meditation', 'mindfulness', 'breath', 'calm'] },
   { icon: '🏋️', keywords: ['lift', 'lifting', 'strength', 'weights'] },
@@ -77,6 +77,7 @@ const workEntries: KeywordIconEntry[] = [
   { icon: '🧮', keywords: ['calculation', 'math', 'spreadsheet', 'formula'] },
   { icon: '📦', keywords: ['shipping', 'delivery', 'orders', 'logistics'] },
   { icon: '🔍', keywords: ['search', 'find', 'discover', 'look'] },
+  { icon: '🧑‍🍳', keywords: ['cook', 'recipe', 'food'] },
 ];
 
 const homeEntries: KeywordIconEntry[] = [
