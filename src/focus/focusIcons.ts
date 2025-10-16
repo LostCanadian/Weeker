@@ -1,4 +1,4 @@
-export const DEFAULT_FOCUS_ICON = '🗂️';
+export const DEFAULT_FOCUS_ICON = '🗓️';
 
 type KeywordIconEntry = {
   icon: string;
@@ -59,12 +59,12 @@ const workEntries: KeywordIconEntry[] = [
   { icon: '🧑‍🏫', keywords: ['teaching', 'lesson', 'class', 'students'] },
   { icon: '🧑‍🎓', keywords: ['student', 'study', 'exam', 'graduate'] },
   { icon: '💼', keywords: ['work', 'briefcase', 'office', 'career'] },
-  { icon: '🧑‍💼', keywords: ['manager', 'executive', 'business', 'office'] },
-  { icon: '💻', keywords: ['coding', 'software', 'programming', 'development'] },
+  { icon: '🧑‍💼', keywords: ['manager', 'executive', 'business', 'office', 'manage'] },
+  { icon: '💻', keywords: ['coding', 'software', 'programming', 'development', 'dev', 'program', 'technology', 'tech'] },
   { icon: '🧑‍💻', keywords: ['debugging', 'refactor', 'commit', 'review'] },
   { icon: '🖥️', keywords: ['computer', 'desktop', 'workstation', 'monitor'] },
-  { icon: '📊', keywords: ['analytics', 'dashboard', 'metrics', 'report'] },
-  { icon: '📈', keywords: ['strategy', 'growth', 'plan', 'roadmap'] },
+  { icon: '📊', keywords: ['analytics', 'dashboard', 'metrics', 'report', 'graph'] },
+  { icon: '📈', keywords: ['strategy', 'growth', 'plan', 'roadmap', 'chart'] },
   { icon: '🗂️', keywords: ['organize', 'files', 'folders', 'index'] },
   { icon: '🗄️', keywords: ['archive', 'filing', 'records', 'cabinet'] },
   { icon: '📅', keywords: ['schedule', 'calendar', 'planning', 'agenda'] },
@@ -76,6 +76,7 @@ const workEntries: KeywordIconEntry[] = [
   { icon: '💵', keywords: ['budget', 'finance', 'expenses', 'cash'] },
   { icon: '🧮', keywords: ['calculation', 'math', 'spreadsheet', 'formula'] },
   { icon: '📦', keywords: ['shipping', 'delivery', 'orders', 'logistics'] },
+  { icon: '🔍', keywords: ['search', 'find', 'discover', 'look'] },
 ];
 
 const homeEntries: KeywordIconEntry[] = [
@@ -199,8 +200,8 @@ const animalEntries: KeywordIconEntry[] = [
   { icon: '🐛', keywords: ['caterpillar', 'larva', 'leaf', 'munch'] },
   { icon: '🐙', keywords: ['octopus', 'tentacle', 'cephalopod', 'ink'] },
   { icon: '🦑', keywords: ['squid', 'cephalopod', 'ocean', 'deep'] },
-  { icon: '🐠', keywords: ['fish', 'aquarium', 'reef', 'swim'] },
-  { icon: '🐟', keywords: ['fishing', 'freshwater', 'stream', 'catch'] },
+  { icon: '🐟', keywords: ['fish', 'fishing', 'freshwater', 'stream', 'catch'] },
+  { icon: '🐠', keywords: ['fish', 'aquarium', 'reef', 'swim', 'tropical'] },
   { icon: '🐬', keywords: ['dolphin', 'ocean', 'marine', 'swim'] },
   { icon: '🐳', keywords: ['whale', 'ocean', 'marine', 'breach'] },
   { icon: '🦈', keywords: ['shark', 'ocean', 'predator', 'fin'] },
