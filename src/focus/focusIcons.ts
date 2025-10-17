@@ -263,7 +263,7 @@ const travelEntries: KeywordIconEntry[] = [
   { icon: '⛵', keywords: ['sail', 'sailing', 'regatta', 'boat'] },
   { icon: '🛶', keywords: ['canoe', 'paddle', 'river', 'lake', 'canoeing', 'canoes', 'kayak', 'kayaking', 'kayaks', 'paddling'] },
   { icon: '🚤', keywords: ['speedboat', 'wake', 'water', 'lake'] },
-  { icon: '🛥️', keywords: ['yacht', 'cruise', 'marina', 'luxury'] },
+  { icon: '🛥️', keywords: ['yacht', 'cruise', 'marina', 'luxury', 'ship'] },
   { icon: '⚓', keywords: ['anchor', 'nautical', 'harbor', 'moor'] },
   { icon: '🧭', keywords: ['direction', 'orient', 'heading', 'scout'] },
   { icon: '🗺️', keywords: ['mapping', 'route', 'navigation', 'atlas'] },
