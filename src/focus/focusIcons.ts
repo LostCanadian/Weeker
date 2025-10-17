@@ -323,6 +323,296 @@ const KEYWORD_ICON_ENTRIES: KeywordIconEntry[] = [
   ...placeEntries,
 ];
 
+const SYNONYM_GROUPS: string[][] = [
+  // Sports & Fitness
+  ['walk', 'walking', 'stroll', 'stride', 'saunter', 'amble', 'footstep', 'steps'],
+  ['run', 'runner', 'jog', 'sprint', 'dash', 'race', 'tempo', 'interval'],
+  ['marathon', 'endurance', 'ultra', 'distance', 'road'],
+  ['hike', 'hiking', 'trek', 'backpack', 'summit', 'trail', 'ramble'],
+  ['bike', 'bicycle', 'cycling', 'ride', 'spin', 'cadence', 'peloton'],
+  ['mountain', 'mtb', 'downhill', 'singletrack', 'offroad'],
+  ['swim', 'swimming', 'freestyle', 'backstroke', 'laps', 'pool'],
+  ['climb', 'climbing', 'boulder', 'bouldering', 'crag', 'belay'],
+  ['yoga', 'stretch', 'asana', 'pose', 'balance', 'namaste', 'pilates'],
+  ['meditation', 'mindfulness', 'breath', 'breathing', 'calm', 'zen'],
+  ['lift', 'lifting', 'strength', 'weights', 'weightlifting', 'powerlifting', 'barbell'],
+  ['boxing', 'spar', 'punch', 'kickboxing', 'fight', 'ring'],
+  ['skateboard', 'skateboarding', 'skate', 'ollie', 'kickflip', 'longboard'],
+  ['skating', 'ice', 'figure', 'rink', 'glide', 'hockey'],
+  ['golf', 'golfing', 'swing', 'putt', 'fairway', 'links', 'green', 'handicap'],
+  ['surf', 'surfing', 'wave', 'waves', 'ocean', 'surfboard', 'break'],
+  ['martial', 'karate', 'dojo', 'sparring', 'taekwondo', 'judo', 'jiujitsu'],
+  ['gymnastics', 'gymnast', 'cartwheel', 'tumble', 'routine', 'acrobatics', 'handstand'],
+
+  // Creative
+  ['art', 'painting', 'painter', 'canvas', 'creative', 'acrylic', 'oil'],
+  ['sketch', 'drawing', 'draw', 'doodle', 'illustration', 'pencil'],
+  ['brush', 'watercolor', 'palette', 'paintbrush'],
+  ['sewing', 'stitch', 'fabric', 'thread', 'needle', 'tailor', 'quilting'],
+  ['knit', 'knitting', 'crochet', 'crocheting', 'yarn', 'loom', 'pattern'],
+  ['puzzle', 'brainteaser', 'solve', 'logic', 'riddle', 'crossword'],
+  ['composition', 'score', 'theory', 'arrange', 'arrangement', 'sheetmusic'],
+  ['piano', 'keyboard', 'keys', 'scales', 'arpeggio', 'pianist'],
+  ['guitar', 'strings', 'riff', 'chords', 'strum', 'pick'],
+  ['violin', 'fiddle', 'cello', 'orchestra', 'bow', 'viola'],
+  ['drums', 'drum', 'percussion', 'rhythm', 'beat', 'drummer'],
+  ['singing', 'vocals', 'choir', 'solo', 'vocal', 'song'],
+  ['mixing', 'sound', 'music', 'audio', 'engineer', 'producer', 'dj'],
+  ['podcast', 'recording', 'microphone', 'broadcast', 'studio', 'podcasting'],
+  ['filming', 'film', 'scene', 'director', 'cinema', 'movie'],
+  ['video', 'editing', 'footage', 'clip', 'videography'],
+  ['photo', 'photography', 'photograph', 'picture', 'image', 'snapshot', 'camera', 'photographer'],
+
+  // Work & Productivity
+  ['idea', 'ideas', 'innovation', 'concept', 'spark', 'insight', 'brainwave'],
+  ['brainstorm', 'ideation', 'workshop', 'mindmap'],
+  ['writing', 'write', 'draft', 'notes', 'essay', 'author', 'manuscript'],
+  ['study', 'studying', 'homework', 'revision', 'exam', 'prep'],
+  ['reading', 'literature', 'novel', 'book', 'chapter'],
+  ['education', 'college', 'degree', 'campus', 'university', 'school'],
+  ['teaching', 'lesson', 'class', 'students', 'lecture', 'instructor'],
+  ['student', 'students', 'exam', 'graduate', 'learner', 'pupil'],
+  ['work', 'job', 'career', 'office', 'professional', 'business'],
+  ['manager', 'executive', 'leadership', 'supervisor', 'management'],
+  ['coding', 'software', 'programming', 'development', 'dev', 'technology', 'engineer'],
+  ['debugging', 'debug', 'refactor', 'commit', 'review', 'testing', 'bugfix'],
+  ['computer', 'desktop', 'workstation', 'monitor', 'pc', 'screen'],
+  ['analytics', 'dashboard', 'metrics', 'report', 'analysis', 'statistics', 'data'],
+  ['strategy', 'strategic', 'growth', 'plan', 'roadmap', 'vision'],
+  ['organize', 'organization', 'files', 'folders', 'index', 'arrange'],
+  ['archive', 'archiving', 'filing', 'records', 'cabinet', 'catalog'],
+  ['schedule', 'calendar', 'planning', 'agenda', 'planner', 'timeline'],
+  ['deadline', 'reminder', 'alarm', 'timer', 'duedate'],
+  ['call', 'phone', 'dial', 'client', 'teleconference'],
+  ['chat', 'message', 'discussion', 'update', 'conversation', 'text'],
+  ['partner', 'agreement', 'deal', 'network', 'collaborate'],
+  ['accounting', 'receipts', 'ledger', 'invoices', 'bookkeeping'],
+  ['budget', 'finance', 'expenses', 'cash', 'spending', 'financial'],
+  ['calculation', 'math', 'spreadsheet', 'formula', 'compute'],
+  ['shipping', 'delivery', 'orders', 'logistics', 'fulfillment', 'freight'],
+  ['search', 'find', 'discover', 'lookup', 'research'],
+  ['cook', 'cooking', 'chef', 'recipe', 'kitchen', 'culinary'],
+
+  // Home & Maintenance
+  ['cleaning', 'clean', 'tidy', 'sweep', 'dust', 'declutter', 'sanitize'],
+  ['laundry', 'wash', 'washing', 'clothes', 'fold', 'launder'],
+  ['scrub', 'sponge', 'wash', 'shine', 'polish'],
+  ['bucket', 'mop', 'rinse', 'chores', 'pail'],
+  ['repair', 'fix', 'tools', 'maintenance', 'mend'],
+  ['wrench', 'adjust', 'tinker', 'tighten', 'spanner'],
+  ['settings', 'config', 'mechanic', 'gear', 'preferences'],
+  ['hardware', 'assembly', 'screw', 'build', 'fastener'],
+  ['hammer', 'nails', 'carpentry', 'remodel', 'woodwork'],
+  ['toolbox', 'tools', 'organize', 'workshop', 'toolkit'],
+
+  // Food & Drink
+  ['dinner', 'meal', 'supper', 'serve', 'entree'],
+  ['stew', 'simmer', 'casserole', 'family', 'braise'],
+  ['soup', 'broth', 'comfort', 'ladle', 'stock'],
+  ['ramen', 'noodles', 'broth', 'bowl', 'udon', 'pho'],
+  ['pasta', 'italian', 'sauce', 'linguine', 'spaghetti'],
+  ['pizza', 'slice', 'cheese', 'pepperoni', 'pizzeria'],
+  ['burger', 'hamburger', 'grill', 'patty', 'burgerjoint'],
+  ['hotdog', 'sausage', 'bun', 'cookout', 'frank'],
+  ['fries', 'fastfood', 'potato', 'side', 'chips'],
+  ['taco', 'mexican', 'salsa', 'tortilla', 'quesadilla'],
+  ['burrito', 'wrap', 'beans', 'rice', 'mission'],
+  ['gyro', 'pita', 'mediterranean', 'shawarma', 'doner'],
+  ['sandwich', 'deli', 'lunch', 'bread', 'sub'],
+  ['salad', 'greens', 'healthy', 'veggies', 'vegetable'],
+  ['bento', 'lunch', 'packed', 'meal', 'lunchbox'],
+  ['sushi', 'nigiri', 'wasabi', 'roll', 'sashimi'],
+  ['shrimp', 'tempura', 'seafood', 'prawn'],
+  ['lobster', 'seafood', 'boil', 'butter', 'crustacean'],
+  ['oyster', 'shellfish', 'raw', 'bar', 'shucker'],
+  ['squid', 'calamari', 'seafood', 'tentacle', 'cephalopod'],
+  ['crab', 'shellfish', 'beach', 'claw', 'crustacean'],
+  ['bbq', 'barbecue', 'ribs', 'grill', 'smoker'],
+  ['chicken', 'poultry', 'roast', 'drumstick', 'fried'],
+  ['steak', 'beef', 'grill', 'medium', 'sirloin'],
+  ['cheese', 'dairy', 'platter', 'fondue', 'cheddar'],
+  ['pancakes', 'breakfast', 'brunch', 'syrup', 'flapjack'],
+  ['bread', 'bakery', 'loaf', 'fresh', 'bake'],
+  ['cupcake', 'dessert', 'pastry', 'frosting', 'cupcakes'],
+  ['cake', 'birthday', 'celebrate', 'frosting', 'bakeshop'],
+  ['donut', 'doughnut', 'breakfast', 'glaze', 'cruller'],
+  ['cookie', 'treat', 'bake', 'batch', 'biscuit'],
+  ['chocolate', 'candy', 'sweet', 'treat', 'cocoa'],
+  ['icecream', 'dessert', 'cone', 'treat', 'gelato'],
+  ['sundae', 'dessert', 'scoop', 'toppings', 'parfait'],
+  ['shaved', 'dessert', 'summer', 'snowcone', 'iceshave'],
+  ['apple', 'fruit', 'snack', 'orchard', 'cider'],
+  ['banana', 'smoothie', 'potassium', 'snack', 'plantain'],
+  ['grapes', 'vine', 'fruit', 'snack', 'vineyard'],
+  ['berries', 'strawberry', 'jam', 'dessert', 'blueberry'],
+  ['pineapple', 'tropical', 'fruit', 'sweet', 'island'],
+  ['coconut', 'tropical', 'hydration', 'island', 'cocos'],
+  ['kiwi', 'fruit', 'tart', 'tropical', 'kiwifruit'],
+  ['mango', 'tropical', 'smoothie', 'fruit', 'mangosteen'],
+  ['peach', 'fruit', 'juicy', 'summer', 'stonefruit'],
+  ['melon', 'picnic', 'summer', 'refresh', 'watermelon'],
+  ['coffee', 'espresso', 'brew', 'latte', 'cappuccino'],
+  ['tea', 'brew', 'steep', 'herbal', 'chai'],
+  ['drink', 'soda', 'refresh', 'beverage', 'juice'],
+  ['beer', 'brewery', 'cheers', 'pint', 'lager'],
+  ['wine', 'vineyard', 'tasting', 'grape', 'vino'],
+  ['champagne', 'celebrate', 'toast', 'sparkling', 'bubbly'],
+  ['cheers', 'celebration', 'toast', 'party', 'clink'],
+
+  // Nature
+  ['garden', 'gardening', 'seed', 'sprout', 'planting'],
+  ['plants', 'houseplant', 'watering', 'repot', 'botanical'],
+  ['herb', 'planter', 'green', 'windowsill', 'herbal'],
+  ['tree', 'forest', 'shade', 'park', 'woodland'],
+  ['evergreen', 'pine', 'woodland', 'conifer', 'fir'],
+  ['cactus', 'succulent', 'desert', 'arid', 'cacti'],
+  ['sunflower', 'bloom', 'flowers', 'garden', 'blossom'],
+  ['tulip', 'bulb', 'spring', 'garden', 'flower'],
+  ['harvest', 'grain', 'farm', 'field', 'crops'],
+  ['autumn', 'leaves', 'fall', 'rake', 'foliage'],
+
+  // Animals & Wildlife
+  ['dog', 'canine', 'puppy', 'walk', 'hound', 'doggo'],
+  ['wolf', 'pack', 'howl', 'wild', 'canid'],
+  ['cat', 'feline', 'kitty', 'purr', 'meow'],
+  ['kitten', 'tabby', 'nap', 'whisker', 'kitty'],
+  ['fox', 'clever', 'wild', 'forest', 'vulpine'],
+  ['rabbit', 'bunny', 'hop', 'burrow', 'hare'],
+  ['bear', 'wildlife', 'forest', 'camp', 'grizzly'],
+  ['panda', 'bamboo', 'conservation', 'zoo', 'bear'],
+  ['koala', 'australia', 'eucalyptus', 'nap', 'marsupial'],
+  ['lion', 'pride', 'safari', 'king', 'bigcat'],
+  ['tiger', 'stripes', 'predator', 'jungle', 'bigcat'],
+  ['zebra', 'savanna', 'stripes', 'herd', 'equine'],
+  ['giraffe', 'savanna', 'tall', 'browse', 'neck'],
+  ['elephant', 'safari', 'herd', 'trunk', 'pachyderm'],
+  ['rhino', 'conservation', 'horn', 'grassland', 'rhinoceros'],
+  ['mouse', 'rodent', 'lab', 'pet', 'mice'],
+  ['hamster', 'pet', 'wheel', 'cage', 'rodent'],
+  ['turtle', 'reptile', 'shell', 'slow', 'terrapin'],
+  ['lizard', 'reptile', 'gecko', 'desert', 'iguana'],
+  ['snake', 'serpent', 'reptile', 'coil', 'viper'],
+  ['frog', 'amphibian', 'pond', 'leap', 'toad'],
+  ['penguin', 'arctic', 'waddle', 'colony', 'antarctic'],
+  ['bird', 'aviary', 'chirp', 'feeder', 'songbird'],
+  ['eagle', 'raptor', 'soar', 'freedom', 'hawk'],
+  ['owl', 'nocturnal', 'wise', 'forest', 'hoot'],
+  ['duck', 'pond', 'waterfowl', 'quack', 'mallard'],
+  ['rooster', 'farm', 'crow', 'dawn', 'chicken'],
+  ['chicken', 'poultry', 'coop', 'egg', 'hen'],
+  ['chick', 'hatchling', 'spring', 'brood', 'fledgling'],
+  ['butterfly', 'wings', 'garden', 'metamorph', 'monarch'],
+  ['bee', 'pollinator', 'hive', 'honey', 'beekeeping'],
+  ['ladybug', 'beetle', 'garden', 'spots', 'ladybird'],
+  ['caterpillar', 'larva', 'leaf', 'munch', 'inchworm'],
+  ['octopus', 'tentacle', 'cephalopod', 'ink', 'kraken'],
+  ['squid', 'cephalopod', 'ocean', 'deep', 'calamari'],
+  ['fish', 'fishing', 'freshwater', 'stream', 'angler'],
+  ['reef', 'aquarium', 'tropical', 'swim', 'coral'],
+  ['dolphin', 'ocean', 'marine', 'swim', 'porpoise'],
+  ['whale', 'ocean', 'marine', 'breach', 'cetacean'],
+  ['shark', 'ocean', 'predator', 'fin', 'jaws'],
+  ['otter', 'river', 'playful', 'swim', 'raft'],
+  ['crocodile', 'reptile', 'swamp', 'jaws', 'alligator'],
+  ['dragon', 'fantasy', 'scale', 'myth', 'wyrm'],
+
+  // Weather & Environment
+  ['sun', 'sunshine', 'clear', 'daylight', 'sunny'],
+  ['partly', 'suncloud', 'partlysunny', 'partlycloudy'],
+  ['cloudy', 'overcast', 'sky', 'grey', 'gray'],
+  ['mostly', 'gloom', 'dreary', 'clouded'],
+  ['sunshower', 'rainbow', 'showers', 'mix', 'sprinkle'],
+  ['rain', 'drizzle', 'storm', 'wet', 'rainy'],
+  ['thunder', 'lightning', 'storm', 'weather', 'thunderstorm'],
+  ['lightning', 'electric', 'bolt', 'strike'],
+  ['snow', 'flurries', 'winter', 'cold', 'blizzard'],
+  ['snowflake', 'frost', 'ice', 'chilly', 'flake'],
+  ['wind', 'gust', 'breeze', 'draft', 'windy'],
+  ['fog', 'mist', 'haze', 'low', 'foggy'],
+  ['tornado', 'twister', 'cyclone', 'funnel', 'whirlwind'],
+  ['rainbow', 'color', 'spectrum', 'hope', 'prism'],
+  ['night', 'moon', 'evening', 'sleep', 'midnight'],
+  ['star', 'sparkle', 'goal', 'celestial', 'starlight'],
+  ['highlight', 'feature', 'shine', 'spotlight', 'notable'],
+  ['fire', 'bonfire', 'campfire', 'blaze', 'flame'],
+  ['water', 'drop', 'hydrate', 'drip', 'splash'],
+  ['ocean', 'wave', 'tide', 'surf', 'sea'],
+
+  // Travel & Places
+  ['car', 'drive', 'road', 'commute', 'vehicle', 'automobile'],
+  ['suv', 'roadtrip', 'family', 'crossover'],
+  ['taxi', 'cab', 'hail', 'rideshare', 'uber'],
+  ['van', 'shuttle', 'carpool', 'camper', 'minivan'],
+  ['delivery', 'freight', 'shipping', 'logistics', 'courier'],
+  ['semi', 'longhaul', 'trucker', 'eighteenwheeler'],
+  ['pickup', 'haul', 'cargo', 'ute', 'truck'],
+  ['commuter', 'bike', 'cycle', 'pedal', 'bicycle'],
+  ['scooter', 'commute', 'micro', 'mobility', 'kickscooter'],
+  ['moped', 'vespa', 'scooter', 'city', 'motorscooter'],
+  ['motorcycle', 'motorbike', 'ride', 'cruise', 'chopper'],
+  ['bus', 'transit', 'route', 'coach', 'public'],
+  ['trolley', 'streetcar', 'commute', 'city', 'tram'],
+  ['train', 'rail', 'station', 'commute', 'railway'],
+  ['subway', 'metro', 'underground', 'transit', 'tube'],
+  ['tram', 'lightrail', 'streetcar', 'transit', 'tramway'],
+  ['locomotive', 'railway', 'steam', 'historic', 'engine'],
+  ['flight', 'airplane', 'travel', 'depart', 'flying'],
+  ['aviation', 'pilot', 'acrobatics', 'airshow', 'aircraft'],
+  ['departure', 'airport', 'board', 'gate', 'takeoff'],
+  ['arrival', 'landing', 'airport', 'runway', 'touchdown'],
+  ['helicopter', 'airlift', 'chopper', 'rotor', 'heli'],
+  ['rocket', 'launch', 'space', 'mission', 'spaceflight'],
+  ['satellite', 'orbit', 'signal', 'space', 'telemetry'],
+  ['ufo', 'alien', 'sighting', 'mystery', 'spaceship'],
+  ['sail', 'sailing', 'regatta', 'boat', 'yachting'],
+  ['canoe', 'paddle', 'river', 'lake', 'kayak'],
+  ['speedboat', 'wake', 'water', 'lake', 'powerboat'],
+  ['yacht', 'cruise', 'marina', 'luxury', 'sailboat'],
+  ['anchor', 'nautical', 'harbor', 'moor', 'anchorage'],
+  ['direction', 'orient', 'heading', 'scout', 'compass'],
+  ['mapping', 'route', 'navigation', 'atlas', 'map'],
+  ['luggage', 'travel', 'packing', 'suitcase', 'baggage'],
+  ['backpack', 'travel', 'hike', 'trek', 'rucksack'],
+
+  // Locations & Landmarks
+  ['home', 'house', 'residence', 'realestate', 'dwelling'],
+  ['garden', 'yard', 'cottage', 'suburb', 'landscape'],
+  ['community', 'neighborhood', 'block', 'homes', 'neighbors'],
+  ['renovation', 'fixer', 'restore', 'remodel', 'rehab'],
+  ['office', 'corporate', 'headquarters', 'building', 'workplace'],
+  ['mall', 'retail', 'shopping', 'department', 'plaza'],
+  ['store', 'convenience', 'shop', 'retail', 'market'],
+  ['bank', 'finance', 'branch', 'savings', 'creditunion'],
+  ['hotel', 'stay', 'checkin', 'travel', 'lodging'],
+  ['hospitality', 'inn', 'lodging', 'suite', 'guesthouse'],
+  ['hospital', 'clinic', 'medical', 'care', 'healthcare'],
+  ['government', 'civic', 'policy', 'council', 'municipal'],
+  ['construction', 'crane', 'build', 'site', 'development'],
+  ['manufacturing', 'factory', 'plant', 'industry', 'production'],
+  ['castle', 'heritage', 'history', 'tour', 'fortress'],
+  ['fantasy', 'kingdom', 'fairytale', 'storybook', 'magic'],
+  ['mosque', 'worship', 'prayer', 'community', 'masjid'],
+  ['church', 'service', 'chapel', 'worship', 'cathedral'],
+  ['synagogue', 'temple', 'worship', 'community', 'shul'],
+  ['temple', 'shrine', 'worship', 'ritual', 'mandir'],
+  ['torii', 'shrine', 'japan', 'tradition', 'gate'],
+  ['park', 'nature', 'outdoors', 'scenic', 'greenspace'],
+  ['desert', 'sand', 'dunes', 'arid', 'badlands'],
+  ['island', 'tropical', 'beach', 'vacation', 'isle'],
+  ['beach', 'vacation', 'umbrella', 'sand', 'seaside'],
+  ['mountain', 'peak', 'summit', 'alpine', 'range'],
+  ['camping', 'camp', 'tent', 'outdoor', 'overnight'],
+  ['stadium', 'sports', 'arena', 'event', 'ballpark'],
+  ['festival', 'fair', 'amusement', 'rides', 'carnival'],
+  ['rollercoaster', 'thrill', 'themepark', 'ride', 'coaster'],
+  ['carousel', 'fair', 'horses', 'ride', 'merrygoround'],
+  ['bridge', 'fog', 'skyline', 'landmark', 'suspension'],
+  ['nightscape', 'lights', 'river', 'illuminated', 'skyline'],
+  ['twilight', 'city', 'buildings', 'dusk', 'evening'],
+  ['sunset', 'evening', 'city', 'skyline', 'dusk'],
+  ['city', 'downtown', 'urban', 'skyline', 'metropolis'],
+];
+
 type NormalizedEntry = {
   icon: string;
   keywords: string[];
@@ -335,17 +625,113 @@ const normalizeForMatch = (value: string): string =>
     .replace(/\s+/g, ' ')
     .trim();
 
+const createSynonymLookup = (): Map<string, Set<string>> => {
+  const lookup = new Map<string, Set<string>>();
+
+  for (const group of SYNONYM_GROUPS) {
+    const normalizedGroup = group
+      .map((word) => normalizeForMatch(word))
+      .filter((word) => word.length > 0);
+
+    for (const word of normalizedGroup) {
+      let synonyms = lookup.get(word);
+      if (!synonyms) {
+        synonyms = new Set<string>();
+        lookup.set(word, synonyms);
+      }
+
+      for (const synonym of normalizedGroup) {
+        if (synonym !== word) {
+          synonyms.add(synonym);
+        }
+      }
+    }
+  }
+
+  return lookup;
+};
+
+const SYNONYM_LOOKUP = createSynonymLookup();
+
+const isConsonant = (character: string): boolean =>
+  /^[bcdfghjklmnpqrstvwxyz]$/.test(character);
+
+const addPluralVariants = (keyword: string, variants: Set<string>) => {
+  if (!keyword || keyword.length < 2 || keyword.includes(' ')) {
+    return;
+  }
+
+  const length = keyword.length;
+
+  if (keyword.endsWith('ies') && length > 3) {
+    variants.add(`${keyword.slice(0, -3)}y`);
+  } else if (keyword.endsWith('ves') && length > 3) {
+    variants.add(`${keyword.slice(0, -3)}f`);
+    variants.add(`${keyword.slice(0, -3)}fe`);
+  } else if (/(ches|shes|xes|zes|ses)$/u.test(keyword) && length > 3) {
+    variants.add(keyword.slice(0, -2));
+  } else if (keyword.endsWith('s') && length > 1 && !keyword.endsWith('ss')) {
+    variants.add(keyword.slice(0, -1));
+  }
+
+  if (keyword.endsWith('s')) {
+    return;
+  }
+
+  if (
+    keyword.endsWith('y') &&
+    length > 1 &&
+    isConsonant(keyword[length - 2])
+  ) {
+    variants.add(`${keyword.slice(0, -1)}ies`);
+  } else if (/(s|x|z|ch|sh)$/u.test(keyword)) {
+    variants.add(`${keyword}es`);
+  } else {
+    variants.add(`${keyword}s`);
+  }
+};
+
+const expandKeyword = (keyword: string): string[] => {
+  const normalizedKeyword = normalizeForMatch(keyword);
+  if (!normalizedKeyword) {
+    return [];
+  }
+
+  const variants = new Set<string>([normalizedKeyword]);
+  addPluralVariants(normalizedKeyword, variants);
+
+  const synonyms = SYNONYM_LOOKUP.get(normalizedKeyword);
+  if (synonyms) {
+    for (const synonym of synonyms) {
+      variants.add(synonym);
+      addPluralVariants(synonym, variants);
+    }
+  }
+
+  return Array.from(variants);
+};
+
+const expandKeywords = (keywords: string[]): string[] => {
+  const variants = new Set<string>();
+
+  for (const keyword of keywords) {
+    for (const variant of expandKeyword(keyword)) {
+      if (variant.length > 0) {
+        variants.add(variant);
+      }
+    }
+  }
+
+  return Array.from(variants);
+};
+
 const NORMALIZED_ENTRIES: NormalizedEntry[] = KEYWORD_ICON_ENTRIES.map(
   (entry) => {
-    const normalizedKeywords = entry.keywords
-      .map((keyword) => normalizeForMatch(keyword))
-      .filter((keyword) => keyword.length > 0);
-
-    const uniqueKeywords = Array.from(new Set(normalizedKeywords));
+    const expandedKeywords = expandKeywords(entry.keywords);
 
     return {
       icon: entry.icon,
-      keywords: uniqueKeywords,
+      keywords: expandedKeywords,
     };
   },
 );
