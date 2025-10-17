@@ -212,7 +212,7 @@ const animalEntries: KeywordIconEntry[] = [
 ];
 
 const weatherEntries: KeywordIconEntry[] = [
-  { icon: '☀️', keywords: ['sun', 'sunshine', 'clear', 'weather'] },
+  { icon: '☀️', keywords: ['sun', 'sunshine', 'clear', 'weather', 'sunrise'] },
   { icon: '🌤️', keywords: ['partly', 'cloud', 'sun', 'forecast'] },
   { icon: '⛅', keywords: ['cloudy', 'overcast', 'sky', 'grey'] },
   { icon: '🌥️', keywords: ['mostly', 'cloud', 'gloom', 'forecast'] },
@@ -658,7 +658,7 @@ const isConsonant = (character: string): boolean =>
 
 const addPluralVariants = (
   keyword: string,
-  addVariant: (variant: string) => void,
+  addVariant: (variant: string) => boolean,
 ) => {
   if (!keyword || keyword.length < 2 || keyword.includes(' ')) {
     return;
@@ -727,17 +727,18 @@ const expandKeyword = (keyword: string, entryIcon: string): string[] => {
 
   const variants = new Set<string>([normalizedKeyword]);
 
-  const addVariant = (variant: string) => {
+  const addVariant = (variant: string): boolean => {
     if (!variant || variants.has(variant)) {
-      return;
+      return false;
     }
 
     const iconsForKeyword = KEYWORD_TO_ICONS.get(variant);
     if (iconsForKeyword && !iconsForKeyword.has(entryIcon)) {
-      return;
+      return false;
     }
 
     variants.add(variant);
+    return true;
   };
 
   addPluralVariants(normalizedKeyword, addVariant);
@@ -745,8 +746,9 @@ const expandKeyword = (keyword: string, entryIcon: string): string[] => {
   const synonyms = SYNONYM_LOOKUP.get(normalizedKeyword);
   if (synonyms) {
     for (const synonym of synonyms) {
-      addVariant(synonym);
-      addPluralVariants(synonym, addVariant);
+      if (addVariant(synonym)) {
+        addPluralVariants(synonym, addVariant);
+      }
     }
   }
 
