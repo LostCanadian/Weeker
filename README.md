@@ -22,3 +22,4 @@ Key capabilities include:
 - Personal projects
 - Fitness goals
 - Work-life balance
+- Sleep tracking
