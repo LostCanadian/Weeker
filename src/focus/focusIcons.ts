@@ -656,7 +656,10 @@ const SYNONYM_LOOKUP = createSynonymLookup();
 const isConsonant = (character: string): boolean =>
   /^[bcdfghjklmnpqrstvwxyz]$/.test(character);
 
-const addPluralVariants = (keyword: string, variants: Set<string>) => {
+const addPluralVariants = (
+  keyword: string,
+  addVariant: (variant: string) => void,
+) => {
   if (!keyword || keyword.length < 2 || keyword.includes(' ')) {
     return;
   }
@@ -664,14 +667,14 @@ const addPluralVariants = (keyword: string, variants: Set<string>) => {
   const length = keyword.length;
 
   if (keyword.endsWith('ies') && length > 3) {
-    variants.add(`${keyword.slice(0, -3)}y`);
+    addVariant(`${keyword.slice(0, -3)}y`);
   } else if (keyword.endsWith('ves') && length > 3) {
-    variants.add(`${keyword.slice(0, -3)}f`);
-    variants.add(`${keyword.slice(0, -3)}fe`);
+    addVariant(`${keyword.slice(0, -3)}f`);
+    addVariant(`${keyword.slice(0, -3)}fe`);
   } else if (/(ches|shes|xes|zes|ses)$/u.test(keyword) && length > 3) {
-    variants.add(keyword.slice(0, -2));
+    addVariant(keyword.slice(0, -2));
   } else if (keyword.endsWith('s') && length > 1 && !keyword.endsWith('ss')) {
-    variants.add(keyword.slice(0, -1));
+    addVariant(keyword.slice(0, -1));
   }
 
   if (keyword.endsWith('s')) {
@@ -683,39 +686,78 @@ const addPluralVariants = (keyword: string, variants: Set<string>) => {
     length > 1 &&
     isConsonant(keyword[length - 2])
   ) {
-    variants.add(`${keyword.slice(0, -1)}ies`);
+    addVariant(`${keyword.slice(0, -1)}ies`);
   } else if (/(s|x|z|ch|sh)$/u.test(keyword)) {
-    variants.add(`${keyword}es`);
+    addVariant(`${keyword}es`);
   } else {
-    variants.add(`${keyword}s`);
+    addVariant(`${keyword}s`);
   }
 };
 
-const expandKeyword = (keyword: string): string[] => {
+const createKeywordToIconsMap = (): Map<string, Set<string>> => {
+  const map = new Map<string, Set<string>>();
+
+  for (const entry of KEYWORD_ICON_ENTRIES) {
+    for (const keyword of entry.keywords) {
+      const normalized = normalizeForMatch(keyword);
+      if (!normalized) {
+        continue;
+      }
+
+      let icons = map.get(normalized);
+      if (!icons) {
+        icons = new Set<string>();
+        map.set(normalized, icons);
+      }
+
+      icons.add(entry.icon);
+    }
+  }
+
+  return map;
+};
+
+const KEYWORD_TO_ICONS = createKeywordToIconsMap();
+
+const expandKeyword = (keyword: string, entryIcon: string): string[] => {
   const normalizedKeyword = normalizeForMatch(keyword);
   if (!normalizedKeyword) {
     return [];
   }
 
   const variants = new Set<string>([normalizedKeyword]);
-  addPluralVariants(normalizedKeyword, variants);
+
+  const addVariant = (variant: string) => {
+    if (!variant || variants.has(variant)) {
+      return;
+    }
+
+    const iconsForKeyword = KEYWORD_TO_ICONS.get(variant);
+    if (iconsForKeyword && !iconsForKeyword.has(entryIcon)) {
+      return;
+    }
+
+    variants.add(variant);
+  };
+
+  addPluralVariants(normalizedKeyword, addVariant);
 
   const synonyms = SYNONYM_LOOKUP.get(normalizedKeyword);
   if (synonyms) {
     for (const synonym of synonyms) {
-      variants.add(synonym);
-      addPluralVariants(synonym, variants);
+      addVariant(synonym);
+      addPluralVariants(synonym, addVariant);
     }
   }
 
   return Array.from(variants);
 };
 
-const expandKeywords = (keywords: string[]): string[] => {
+const expandKeywords = (icon: string, keywords: string[]): string[] => {
   const variants = new Set<string>();
 
   for (const keyword of keywords) {
-    for (const variant of expandKeyword(keyword)) {
+    for (const variant of expandKeyword(keyword, icon)) {
       if (variant.length > 0) {
         variants.add(variant);
       }
@@ -727,7 +769,7 @@ const expandKeywords = (keywords: string[]): string[] => {
 
 const NORMALIZED_ENTRIES: NormalizedEntry[] = KEYWORD_ICON_ENTRIES.map(
   (entry) => {
-    const expandedKeywords = expandKeywords(entry.keywords);
+    const expandedKeywords = expandKeywords(entry.icon, entry.keywords);
 
     return {
       icon: entry.icon,
