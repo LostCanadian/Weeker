@@ -23,7 +23,7 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm ci
-      - run: npm run build
+      - run: npm run build -- --mode gh
       - run: cp dist/index.html dist/404.html
       - run: touch dist/.nojekyll
       - uses: actions/upload-pages-artifact@v3
