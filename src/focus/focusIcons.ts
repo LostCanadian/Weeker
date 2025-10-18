@@ -27,7 +27,8 @@ const sportsEntries: KeywordIconEntry[] = [
   { icon: '🏄', keywords: ['surf', 'surfing', 'waves', 'ocean'] },
   { icon: '🥋', keywords: ['martial', 'karate', 'dojo', 'sparring'] },
   { icon: '🤸', keywords: ['gymnastics', 'cartwheel', 'tumble', 'routine'] },
-  { icon: '🎳', keywords: ['bowling' ] },
+  { icon: '🎳', keywords: ['bowling'] },
+  { icon: '💪', keywords: ['workout', 'lift', 'strong', 'strength'] },
 ];
 
 const creativeEntries: KeywordIconEntry[] = [
