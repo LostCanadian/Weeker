@@ -729,59 +729,61 @@ function App() {
             <span className="week-context__day">{currentDayLabel}</span>
           </div>
           <div className="week-context__actions">
-            <label className="week-selector">
-              <span className="week-selector__label">Review week</span>
-              <select
-                value={weekSelectValue}
-                onChange={(event) => setSelectedWeekKey(event.target.value)}
-                disabled={sortedWeekKeys.length === 0}
-              >
-                <option value="" disabled>
-                  {reviewPlaceholder}
-                </option>
-                {sortedWeekKeys.map((weekKey) => {
-                  const weekStart = parseWeekKey(weekKey);
-                  return (
-                    <option key={weekKey} value={weekKey}>
-                      {formatWeekLabel(weekStart)}
-                    </option>
-                  );
-                })}
-              </select>
-            </label>
-            <div className="week-context__action-buttons">
-              <button
-                type="button"
-                className="week-context__icon-button"
-                onClick={handleExportData}
-                disabled={!hasStoredWeeks}
-                title="Export weekly focus data"
-                aria-label="Export weekly focus data"
-              >
-                <span
-                  className="week-context__icon week-context__icon--export"
-                  aria-hidden
+            <div className="week-context__controls">
+              <label className="week-selector">
+                <span className="week-selector__label">Review week</span>
+                <select
+                  value={weekSelectValue}
+                  onChange={(event) => setSelectedWeekKey(event.target.value)}
+                  disabled={sortedWeekKeys.length === 0}
+                >
+                  <option value="" disabled>
+                    {reviewPlaceholder}
+                  </option>
+                  {sortedWeekKeys.map((weekKey) => {
+                    const weekStart = parseWeekKey(weekKey);
+                    return (
+                      <option key={weekKey} value={weekKey}>
+                        {formatWeekLabel(weekStart)}
+                      </option>
+                    );
+                  })}
+                </select>
+              </label>
+              <div className="week-context__action-buttons">
+                <button
+                  type="button"
+                  className="week-context__icon-button"
+                  onClick={handleExportData}
+                  disabled={!hasStoredWeeks}
+                  title="Export weekly focus data"
+                  aria-label="Export weekly focus data"
+                >
+                  <span
+                    className="week-context__icon week-context__icon--export"
+                    aria-hidden
+                  />
+                </button>
+                <button
+                  type="button"
+                  className="week-context__icon-button"
+                  onClick={handleImportClick}
+                  title="Import weekly focus data"
+                  aria-label="Import weekly focus data"
+                >
+                  <span
+                    className="week-context__icon week-context__icon--import"
+                    aria-hidden
+                  />
+                </button>
+                <input
+                  ref={importInputRef}
+                  type="file"
+                  accept="application/json"
+                  className="week-context__file-input"
+                  onChange={handleImportFileChange}
                 />
-              </button>
-              <button
-                type="button"
-                className="week-context__icon-button"
-                onClick={handleImportClick}
-                title="Import weekly focus data"
-                aria-label="Import weekly focus data"
-              >
-                <span
-                  className="week-context__icon week-context__icon--import"
-                  aria-hidden
-                />
-              </button>
-              <input
-                ref={importInputRef}
-                type="file"
-                accept="application/json"
-                className="week-context__file-input"
-                onChange={handleImportFileChange}
-              />
+              </div>
             </div>
             {!isCurrentWeek && (
               <span className="week-context__badge" role="status">
