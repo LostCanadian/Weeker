@@ -1,25 +1,9 @@
 import { FocusItem, WeekStorage } from '../focus/types';
 import { cloneFocusItems } from '../focus/utils';
+import { ThemePreference, isThemePreference } from '../utils/theme';
+import { STORAGE_NAMESPACE } from './constants';
 
 const STORAGE_SCHEMA_VERSION = 2;
-
-const STORAGE_NAMESPACE = (() => {
-  const explicit = import.meta.env.VITE_STORAGE_NAMESPACE?.trim();
-  if (explicit) {
-    return explicit;
-  }
-
-  const mode = import.meta.env.MODE;
-  switch (mode) {
-    case 'development':
-      return 'dev';
-    case 'test':
-      return 'test';
-    case 'production':
-    default:
-      return 'prod';
-  }
-})();
 
 const STORAGE_KEY = `weeker:${STORAGE_NAMESPACE}:weeks:v${STORAGE_SCHEMA_VERSION}`;
 const LEGACY_STORAGE_KEYS = [
@@ -28,19 +12,12 @@ const LEGACY_STORAGE_KEYS = [
 ];
 const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
 
-export const createPersistedWeeksPayload = (
-  weeks: WeekStorage,
-): PersistedWeeksPayload => ({
-  schemaVersion: STORAGE_SCHEMA_VERSION,
-  appVersion: APP_VERSION,
-  weeks: sanitizeWeekStorage(weeks),
-});
-
-export type PersistedWeeksPayload = {
-  schemaVersion: number;
-  appVersion: string;
-  weeks: WeekStorage;
+export type PersistedSettings = {
+  theme?: ThemePreference;
 };
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
 
 const sanitizeFocusItems = (items: unknown): FocusItem[] => {
   if (!Array.isArray(items)) return [];
@@ -72,6 +49,17 @@ const sanitizeFocusItems = (items: unknown): FocusItem[] => {
   return sanitized;
 };
 
+export const sanitizePersistedSettings = (
+  value: unknown,
+): PersistedSettings => {
+  if (!isRecord(value)) {
+    return {};
+  }
+
+  const themeValue = value.theme;
+  return isThemePreference(themeValue) ? { theme: themeValue } : {};
+};
+
 export const sanitizeWeekStorage = (value: unknown): WeekStorage => {
   if (!value || typeof value !== 'object') {
     return {};
@@ -90,27 +78,66 @@ export const sanitizeWeekStorage = (value: unknown): WeekStorage => {
   );
 };
 
+export const createPersistedWeeksPayload = (
+  weeks: WeekStorage,
+  settings?: PersistedSettings,
+): PersistedWeeksPayload => {
+  const payload: PersistedWeeksPayload = {
+    schemaVersion: STORAGE_SCHEMA_VERSION,
+    appVersion: APP_VERSION,
+    weeks: sanitizeWeekStorage(weeks),
+  };
+
+  if (settings) {
+    const sanitizedSettings = sanitizePersistedSettings(settings);
+    if (Object.keys(sanitizedSettings).length > 0) {
+      payload.settings = sanitizedSettings;
+    }
+  }
+
+  return payload;
+};
+
+export type PersistedWeeksPayload = {
+  schemaVersion: number;
+  appVersion: string;
+  weeks: WeekStorage;
+  settings?: PersistedSettings;
+};
+
 const readPayload = (raw: string | null): PersistedWeeksPayload | null => {
   if (!raw) return null;
 
   try {
-    const parsed = JSON.parse(raw) as PersistedWeeksPayload;
-    if (
-      typeof parsed !== 'object' ||
-      parsed === null ||
-      typeof parsed.schemaVersion !== 'number' ||
-      typeof parsed.weeks !== 'object'
-    ) {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const schemaVersion = parsed.schemaVersion;
+    const weeksValue = parsed.weeks;
+
+    if (typeof schemaVersion !== 'number' || typeof weeksValue === 'undefined') {
       return null;
     }
 
-    if (parsed.schemaVersion !== STORAGE_SCHEMA_VERSION) {
+    if (schemaVersion !== STORAGE_SCHEMA_VERSION) {
       console.warn(
-        `Unsupported storage schema version ${parsed.schemaVersion}; expected ${STORAGE_SCHEMA_VERSION}.`,
+        `Unsupported storage schema version ${schemaVersion}; expected ${STORAGE_SCHEMA_VERSION}.`,
       );
     }
 
-    return parsed;
+    const payload: PersistedWeeksPayload = {
+      schemaVersion,
+      appVersion:
+        typeof parsed.appVersion === 'string' ? parsed.appVersion : APP_VERSION,
+      weeks: sanitizeWeekStorage(weeksValue),
+    };
+
+    if ('settings' in parsed) {
+      const sanitizedSettings = sanitizePersistedSettings(parsed.settings);
+      if (Object.keys(sanitizedSettings).length > 0) {
+        payload.settings = sanitizedSettings;
+      }
+    }
+
+    return payload;
   } catch (error) {
     console.warn('Unable to parse stored weekly focus data.', error);
     return null;
