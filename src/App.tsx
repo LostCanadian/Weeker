@@ -15,7 +15,11 @@ import './App.css';
 import { FocusItem, WeekStorage, initialFocus } from './focus/types';
 import { getFocusIcon } from './focus/focusIcons';
 import { areFocusItemsEqual, cloneFocusItems } from './focus/utils';
-import { weeksStorage } from './storage/weeksStorage';
+import {
+  createPersistedWeeksPayload,
+  sanitizeWeekStorage,
+  weeksStorage,
+} from './storage/weeksStorage';
 import {
   calculateWeekProgressPercent,
   formatWeekKey,
@@ -31,6 +35,18 @@ type FocusNotesProps = {
   disabled: boolean;
   onChange: (value: string) => void;
   onBlur: (value: string) => void;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const extractWeeksFromImport = (value: unknown): WeekStorage => {
+  if (isRecord(value) && 'weeks' in value) {
+    const payload = value as { weeks?: unknown };
+    return sanitizeWeekStorage(payload.weeks ?? {});
+  }
+
+  return sanitizeWeekStorage(value);
 };
 
 const FocusNotes = ({
@@ -182,6 +198,7 @@ function App() {
   >(null);
   const cancelEditRef = useRef(false);
   const editInputRef = useRef<HTMLInputElement | null>(null);
+  const importInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -272,6 +289,88 @@ function App() {
   const sortedWeekKeys = useMemo(
     () => Object.keys(weeksData).sort((a, b) => (a < b ? 1 : -1)),
     [weeksData],
+  );
+  const hasStoredWeeks = sortedWeekKeys.length > 0;
+
+  const handleExportData = useCallback(() => {
+    if (!hasStoredWeeks || typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      const payload = {
+        ...createPersistedWeeksPayload(weeksData),
+        exportedAt: new Date().toISOString(),
+      };
+      const serialized = JSON.stringify(payload, null, 2);
+      const blob = new Blob([serialized], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `weeker-backup-${timestamp}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 0);
+    } catch (error) {
+      console.warn('Unable to export weekly focus data.', error);
+    }
+  }, [hasStoredWeeks, weeksData]);
+
+  const handleImportClick = useCallback(() => {
+    importInputRef.current?.click();
+  }, []);
+
+  const handleImportFileChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const input = event.target;
+      const file = input.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const text = typeof reader.result === 'string' ? reader.result : '';
+          if (!text) {
+            throw new Error('Empty file');
+          }
+
+          const parsed = JSON.parse(text) as unknown;
+          const importedWeeks = extractWeeksFromImport(parsed);
+
+          if (Object.keys(importedWeeks).length === 0) {
+            window.alert(
+              'No weekly focus data was found in the selected backup file.',
+            );
+            return;
+          }
+
+          setWeeksData((prev: WeekStorage) => ({
+            ...prev,
+            ...importedWeeks,
+          }));
+          window.alert('Weekly focus data imported successfully.');
+        } catch (error) {
+          console.warn('Unable to import weekly focus data.', error);
+          window.alert(
+            'Unable to import weekly focus data. Please select a valid backup file.',
+          );
+        } finally {
+          input.value = '';
+        }
+      };
+      reader.onerror = () => {
+        console.warn('Unable to read the selected backup file.');
+        window.alert('Unable to read the selected backup file. Please try again.');
+        input.value = '';
+      };
+
+      reader.readAsText(file);
+    },
+    [],
   );
 
   const selectedWeekStart = useMemo(
@@ -650,6 +749,40 @@ function App() {
                 })}
               </select>
             </label>
+            <div className="week-context__action-buttons">
+              <button
+                type="button"
+                className="week-context__icon-button"
+                onClick={handleExportData}
+                disabled={!hasStoredWeeks}
+                title="Export weekly focus data"
+                aria-label="Export weekly focus data"
+              >
+                <span
+                  className="week-context__icon week-context__icon--export"
+                  aria-hidden
+                />
+              </button>
+              <button
+                type="button"
+                className="week-context__icon-button"
+                onClick={handleImportClick}
+                title="Import weekly focus data"
+                aria-label="Import weekly focus data"
+              >
+                <span
+                  className="week-context__icon week-context__icon--import"
+                  aria-hidden
+                />
+              </button>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept="application/json"
+                className="week-context__file-input"
+                onChange={handleImportFileChange}
+              />
+            </div>
             {!isCurrentWeek && (
               <span className="week-context__badge" role="status">
                 Viewing a previous week

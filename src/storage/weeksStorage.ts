@@ -28,6 +28,14 @@ const LEGACY_STORAGE_KEYS = [
 ];
 const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
 
+export const createPersistedWeeksPayload = (
+  weeks: WeekStorage,
+): PersistedWeeksPayload => ({
+  schemaVersion: STORAGE_SCHEMA_VERSION,
+  appVersion: APP_VERSION,
+  weeks: sanitizeWeekStorage(weeks),
+});
+
 export type PersistedWeeksPayload = {
   schemaVersion: number;
   appVersion: string;
@@ -143,11 +151,7 @@ export const weeksStorage = {
   save(weeks: WeekStorage) {
     if (typeof window === 'undefined') return;
 
-    const payload: PersistedWeeksPayload = {
-      schemaVersion: STORAGE_SCHEMA_VERSION,
-      appVersion: APP_VERSION,
-      weeks: sanitizeWeekStorage(weeks),
-    };
+    const payload = createPersistedWeeksPayload(weeks);
 
     try {
       const serialized = JSON.stringify(payload);
