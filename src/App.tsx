@@ -17,9 +17,13 @@ import { getFocusIcon } from './focus/focusIcons';
 import { areFocusItemsEqual, cloneFocusItems } from './focus/utils';
 import {
   createPersistedWeeksPayload,
+  sanitizePersistedSettings,
   sanitizeWeekStorage,
   weeksStorage,
 } from './storage/weeksStorage';
+import { SettingsPanel } from './components/SettingsPanel';
+import { settingsStorage } from './storage/settingsStorage';
+import { applyThemePreference, ThemePreference } from './utils/theme';
 import {
   calculateWeekProgressPercent,
   formatWeekKey,
@@ -40,13 +44,39 @@ type FocusNotesProps = {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
-const extractWeeksFromImport = (value: unknown): WeekStorage => {
-  if (isRecord(value) && 'weeks' in value) {
-    const payload = value as { weeks?: unknown };
-    return sanitizeWeekStorage(payload.weeks ?? {});
+const extractImportData = (
+  value: unknown,
+): { weeks: WeekStorage; theme: ThemePreference | null } => {
+  if (!isRecord(value)) {
+    return {
+      weeks: sanitizeWeekStorage(value),
+      theme: null,
+    };
   }
 
-  return sanitizeWeekStorage(value);
+  const payload = value as Record<string, unknown>;
+  const weeksSource = 'weeks' in payload ? payload.weeks : payload;
+
+  let theme: ThemePreference | null = null;
+
+  if ('settings' in payload) {
+    const sanitizedSettings = sanitizePersistedSettings(payload.settings);
+    if (sanitizedSettings.theme) {
+      theme = sanitizedSettings.theme;
+    }
+  } else if ('theme' in payload) {
+    const fallbackSettings = sanitizePersistedSettings({
+      theme: payload.theme,
+    });
+    if (fallbackSettings.theme) {
+      theme = fallbackSettings.theme;
+    }
+  }
+
+  return {
+    weeks: sanitizeWeekStorage(weeksSource ?? {}),
+    theme,
+  };
 };
 
 const FocusNotes = ({
@@ -184,6 +214,10 @@ function App() {
   const [newTitle, setNewTitle] = useState('');
   const [newTarget, setNewTarget] = useState(4);
   const [weeksData, setWeeksData] = useState<WeekStorage>({});
+  const [theme, setTheme] = useState<ThemePreference>(
+    () => settingsStorage.load().theme,
+  );
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [storageReady, setStorageReady] = useState(false);
   const [today, setToday] = useState(() => new Date());
   const focusItemsRef = useRef<FocusItem[]>(focusItems);
@@ -199,6 +233,18 @@ function App() {
   const cancelEditRef = useRef(false);
   const editInputRef = useRef<HTMLInputElement | null>(null);
   const importInputRef = useRef<HTMLInputElement | null>(null);
+  const handleSettingsClose = useCallback(() => {
+    setIsSettingsOpen(false);
+  }, []);
+  const handleSettingsToggle = useCallback(() => {
+    setIsSettingsOpen((prev) => !prev);
+  }, []);
+  const handleThemePreferenceChange = useCallback(
+    (nextTheme: ThemePreference) => {
+      setTheme(nextTheme);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -229,6 +275,11 @@ function App() {
     setWeeksData(storedWeeks);
     setStorageReady(true);
   }, []);
+
+  useEffect(() => {
+    applyThemePreference(theme);
+    settingsStorage.save({ theme });
+  }, [theme]);
 
   useEffect(() => {
     focusItemsRef.current = focusItems;
@@ -299,7 +350,7 @@ function App() {
 
     try {
       const payload = {
-        ...createPersistedWeeksPayload(weeksData),
+        ...createPersistedWeeksPayload(weeksData, { theme }),
         exportedAt: new Date().toISOString(),
       };
       const serialized = JSON.stringify(payload, null, 2);
@@ -318,7 +369,7 @@ function App() {
     } catch (error) {
       console.warn('Unable to export weekly focus data.', error);
     }
-  }, [hasStoredWeeks, weeksData]);
+  }, [hasStoredWeeks, theme, weeksData]);
 
   const handleImportClick = useCallback(() => {
     importInputRef.current?.click();
@@ -339,7 +390,8 @@ function App() {
           }
 
           const parsed = JSON.parse(text) as unknown;
-          const importedWeeks = extractWeeksFromImport(parsed);
+          const { weeks: importedWeeks, theme: importedTheme } =
+            extractImportData(parsed);
 
           if (Object.keys(importedWeeks).length === 0) {
             window.alert(
@@ -352,6 +404,9 @@ function App() {
             ...prev,
             ...importedWeeks,
           }));
+          if (importedTheme) {
+            setTheme(importedTheme);
+          }
           window.alert('Weekly focus data imported successfully.');
         } catch (error) {
           console.warn('Unable to import weekly focus data.', error);
@@ -701,6 +756,17 @@ function App() {
 
   return (
     <main className="app">
+      <SettingsPanel
+        isOpen={isSettingsOpen}
+        onClose={handleSettingsClose}
+        theme={theme}
+        onThemeChange={handleThemePreferenceChange}
+        onExport={handleExportData}
+        onImportClick={handleImportClick}
+        importInputRef={importInputRef}
+        onImportFileChange={handleImportFileChange}
+        canExport={hasStoredWeeks}
+      />
       <header className="app__header">
         <div>
           <h1>Weeker</h1>
@@ -710,15 +776,27 @@ function App() {
             </p>
           )}
         </div>
-        {showStartWeekButton && (
+        <div className="app__header-actions">
+          {showStartWeekButton && (
+            <button
+              className="reset-button"
+              type="button"
+              onClick={startCurrentWeek}
+            >
+              Start a fresh week
+            </button>
+          )}
           <button
-            className="reset-button"
             type="button"
-            onClick={startCurrentWeek}
+            className="app__settings-button"
+            onClick={handleSettingsToggle}
+            aria-label="Open settings"
+            aria-haspopup="dialog"
+            aria-expanded={isSettingsOpen}
           >
-            Start a fresh week
+            <span className="app__settings-icon" aria-hidden />
           </button>
-        )}
+        </div>
       </header>
 
       {shouldShowWeekContext && (
@@ -750,40 +828,6 @@ function App() {
                   })}
                 </select>
               </label>
-              <div className="week-context__action-buttons">
-                <button
-                  type="button"
-                  className="week-context__icon-button"
-                  onClick={handleExportData}
-                  disabled={!hasStoredWeeks}
-                  title="Export weekly focus data"
-                  aria-label="Export weekly focus data"
-                >
-                  <span
-                    className="week-context__icon week-context__icon--export"
-                    aria-hidden
-                  />
-                </button>
-                <button
-                  type="button"
-                  className="week-context__icon-button"
-                  onClick={handleImportClick}
-                  title="Import weekly focus data"
-                  aria-label="Import weekly focus data"
-                >
-                  <span
-                    className="week-context__icon week-context__icon--import"
-                    aria-hidden
-                  />
-                </button>
-                <input
-                  ref={importInputRef}
-                  type="file"
-                  accept="application/json"
-                  className="week-context__file-input"
-                  onChange={handleImportFileChange}
-                />
-              </div>
             </div>
             {!isCurrentWeek && (
               <span className="week-context__badge" role="status">
