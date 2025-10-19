@@ -99,11 +99,11 @@ export const SettingsPanel = ({
           <h2 id="settings-panel-title">Settings</h2>
           <button
             type="button"
-            className="settings-panel__close-button"
+            className="icon-button settings-panel__close-button"
             onClick={onClose}
             aria-label="Close settings"
           >
-            <span aria-hidden>&times;</span>
+            ×
           </button>
         </header>
 

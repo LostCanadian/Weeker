@@ -239,20 +239,7 @@
 }
 
 .settings-panel__close-button {
-  border: none;
-  background: transparent;
-  color: var(--color-text);
-  font-size: 1.75rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.5rem;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.settings-panel__close-button:hover {
-  background: var(--color-input-hover);
-  color: var(--color-accent);
+  flex-shrink: 0;
 }
 
 .settings-panel__close-button:focus-visible {
