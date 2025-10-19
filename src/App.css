@@ -96,10 +96,10 @@
 
 .week-context__actions {
   display: flex;
-  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 1rem;
   align-items: center;
+  flex-wrap: nowrap;
 }
 
 .week-context__action-buttons {
@@ -318,6 +318,7 @@
   .week-context__actions {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .planner {
