@@ -47,7 +47,7 @@
   --color-disabled-bg: rgba(182, 197, 194, 0.38);
   --color-disabled-text: rgba(74, 92, 88, 0.7);
   --color-input-bg: rgba(233, 242, 239, 0.7);
-  --mist-pattern: url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2390a9a3' fill-opacity='0.2'%3E%3Ccircle cx='20' cy='20' r='2'/%3E%3Ccircle cx='80' cy='40' r='1.5'/%3E%3Ccircle cx='140' cy='30' r='2'/%3E%3Ccircle cx='40' cy='80' r='1.8'/%3E%3Ccircle cx='120' cy='90' r='1.6'/%3E%3Ccircle cx='60' cy='140' r='2'/%3E%3Ccircle cx='10' cy='120' r='1.4'/%3E%3Ccircle cx='150' cy='130' r='1.4'/%3E%3C/g%3E%3C/svg%3E");
+  --mist-pattern: url('./assets/backgrounds/mist-pattern-light.svg');
 }
 
 :root[data-theme='light'] {
@@ -90,7 +90,7 @@
   --color-disabled-bg: rgba(36, 52, 53, 0.7);
   --color-disabled-text: rgba(173, 199, 196, 0.72);
   --color-input-bg: rgba(23, 36, 37, 0.85);
-  --mist-pattern: url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%235f7c79' fill-opacity='0.24'%3E%3Ccircle cx='20' cy='20' r='2'/%3E%3Ccircle cx='80' cy='40' r='1.5'/%3E%3Ccircle cx='140' cy='30' r='2'/%3E%3Ccircle cx='40' cy='80' r='1.8'/%3E%3Ccircle cx='120' cy='90' r='1.6'/%3E%3Ccircle cx='60' cy='140' r='2'/%3E%3Ccircle cx='10' cy='120' r='1.4'/%3E%3Ccircle cx='150' cy='130' r='1.4'/%3E%3C/g%3E%3C/svg%3E");
+  --mist-pattern: url('./assets/backgrounds/mist-pattern-dark.svg');
 }
 
 @media (prefers-color-scheme: dark) {
@@ -130,7 +130,7 @@
     --color-disabled-bg: rgba(36, 52, 53, 0.7);
     --color-disabled-text: rgba(173, 199, 196, 0.72);
     --color-input-bg: rgba(23, 36, 37, 0.85);
-    --mist-pattern: url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%235f7c79' fill-opacity='0.24'%3E%3Ccircle cx='20' cy='20' r='2'/%3E%3Ccircle cx='80' cy='40' r='1.5'/%3E%3Ccircle cx='140' cy='30' r='2'/%3E%3Ccircle cx='40' cy='80' r='1.8'/%3E%3Ccircle cx='120' cy='90' r='1.6'/%3E%3Ccircle cx='60' cy='140' r='2'/%3E%3Ccircle cx='10' cy='120' r='1.4'/%3E%3Ccircle cx='150' cy='130' r='1.4'/%3E%3C/g%3E%3C/svg%3E");
+    --mist-pattern: url('./assets/backgrounds/mist-pattern-dark.svg');
   }
 }
 
@@ -157,4 +157,16 @@ a:hover {
 
 button {
   font: inherit;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

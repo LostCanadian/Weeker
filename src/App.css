@@ -218,7 +218,7 @@
   padding: 2rem;
   background: rgba(10, 24, 22, 0.35);
   backdrop-filter: blur(4px);
-  z-index: 50;
+  z-index: 1000;
 }
 
 .settings-panel {
@@ -325,20 +325,55 @@
 
 .settings-panel__section--actions {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
   gap: 0.75rem;
 }
 
 .settings-panel__button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--color-border);
   border-radius: 0.85rem;
-  padding: 0.8rem 1rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
   background: var(--color-surface-elevated);
   color: var(--color-text);
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+.settings-panel__button--icon {
+  border-radius: 0.95rem;
+}
+
+.settings-panel__button-icon {
+  width: 1.4rem;
+  height: 1.4rem;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.settings-panel__button-icon--export {
+  mask-image: url('./assets/icons/export.svg');
+  -webkit-mask-image: url('./assets/icons/export.svg');
+}
+
+.settings-panel__button-icon--import {
+  mask-image: url('./assets/icons/import.svg');
+  -webkit-mask-image: url('./assets/icons/import.svg');
 }
 
 .settings-panel__button:hover:not(:disabled) {
@@ -488,7 +523,7 @@
 
 @media (max-width: 600px) {
   .settings-panel__overlay {
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: center;
     padding: 1.25rem;
   }
