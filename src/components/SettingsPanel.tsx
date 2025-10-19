@@ -127,18 +127,30 @@ export const SettingsPanel = ({
           >
             <button
               type="button"
-              className="settings-panel__button"
+              className="settings-panel__button settings-panel__button--icon"
               onClick={onExport}
+              aria-label="Export data"
+              title="Export data"
               disabled={!canExport}
             >
-              Export data
+              <span
+                className="settings-panel__button-icon settings-panel__button-icon--export"
+                aria-hidden
+              />
+              <span className="sr-only">Export data</span>
             </button>
             <button
               type="button"
-              className="settings-panel__button"
+              className="settings-panel__button settings-panel__button--icon"
               onClick={onImportClick}
+              aria-label="Import data"
+              title="Import data"
             >
-              Import data
+              <span
+                className="settings-panel__button-icon settings-panel__button-icon--import"
+                aria-hidden
+              />
+              <span className="sr-only">Import data</span>
             </button>
             <input
               ref={importInputRef}
