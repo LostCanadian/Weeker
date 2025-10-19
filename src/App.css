@@ -64,17 +64,9 @@
 }
 
 .app__settings-icon {
-  width: 1.4rem;
-  height: 1.4rem;
-  background-color: currentColor;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-  mask-image: url('./assets/icons/settings.svg');
-  -webkit-mask-image: url('./assets/icons/settings.svg');
+  display: block;
+  font-size: 1.4rem;
+  line-height: 1;
 }
 
 .reset-button {
