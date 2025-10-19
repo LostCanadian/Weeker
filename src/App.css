@@ -178,17 +178,17 @@
 }
 
 .week-selector__label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-text-soft);
 }
 
 .week-selector select {
-  border-radius: 0.75rem;
+  border-radius: 0.65rem;
   border: 1px solid var(--color-border);
-  padding: 0.6rem 1rem;
-  font-size: 0.95rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
   background: var(--color-input-bg);
   color: var(--color-text);
   cursor: pointer;
