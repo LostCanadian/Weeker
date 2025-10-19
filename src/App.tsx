@@ -794,7 +794,9 @@ function App() {
             aria-haspopup="dialog"
             aria-expanded={isSettingsOpen}
           >
-            <span className="app__settings-icon" aria-hidden />
+            <span className="app__settings-icon" aria-hidden="true">
+              ⚙️
+            </span>
           </button>
         </div>
       </header>
