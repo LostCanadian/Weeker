@@ -1,6 +1,6 @@
 # Weeker
 
-Weeker is a weekly planning app built with React and TypeScript.
+[Weeker](https://www.weeker.ca/) is a weekly planning app built with React and TypeScript.
 
 ## Core concepts
 
