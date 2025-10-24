@@ -955,21 +955,15 @@
 }
 
 .focus-card__notes-line {
-  position: relative;
-  display: block;
-  padding-left: calc(
-    var(--focus-card-note-bullet-size) + var(--focus-card-note-bullet-gap)
-  );
+  display: flex;
+  align-items: baseline;
+  gap: var(--focus-card-note-bullet-gap);
   color: inherit;
   min-height: var(--focus-card-note-line-height);
 }
 
 .focus-card__notes-bullet {
-  position: absolute;
-  top: calc(
-    (var(--focus-card-note-line-height) - var(--focus-card-note-bullet-size)) / 2
-  );
-  left: 0;
+  flex: 0 0 var(--focus-card-note-bullet-size);
   width: var(--focus-card-note-bullet-size);
   height: var(--focus-card-note-bullet-size);
   border-radius: 50%;
@@ -977,6 +971,7 @@
 }
 
 .focus-card__notes-line-text {
+  flex: 1;
   display: block;
   white-space: pre-wrap;
   min-width: 0;
