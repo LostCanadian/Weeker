@@ -955,23 +955,25 @@
 }
 
 .focus-card__notes-line {
-  display: grid;
-  grid-template-columns: var(--focus-card-note-bullet-size) 1fr;
-  column-gap: var(--focus-card-note-bullet-gap);
+  position: relative;
+  display: block;
+  padding-left: calc(
+    var(--focus-card-note-bullet-size) + var(--focus-card-note-bullet-gap)
+  );
   color: inherit;
   min-height: var(--focus-card-note-line-height);
-  align-items: flex-start;
 }
 
 .focus-card__notes-bullet {
-  display: block;
+  position: absolute;
+  top: calc(
+    (var(--focus-card-note-line-height) - var(--focus-card-note-bullet-size)) / 2
+  );
+  left: 0;
   width: var(--focus-card-note-bullet-size);
   height: var(--focus-card-note-bullet-size);
   border-radius: 50%;
   background: var(--focus-card-note-bullet-color);
-  margin-top: calc(
-    (var(--focus-card-note-line-height) - var(--focus-card-note-bullet-size)) / 2
-  );
 }
 
 .focus-card__notes-line-text {
