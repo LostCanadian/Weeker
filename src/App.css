@@ -956,7 +956,7 @@
 
 .focus-card__notes-line {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   gap: var(--focus-card-note-bullet-gap);
   color: inherit;
   min-height: var(--focus-card-note-line-height);
@@ -968,6 +968,12 @@
   height: var(--focus-card-note-bullet-size);
   border-radius: 50%;
   background: var(--focus-card-note-bullet-color);
+  margin-top: max(
+    0px,
+    calc(
+      (var(--focus-card-note-line-height) - var(--focus-card-note-bullet-size)) / 2
+    )
+  );
 }
 
 .focus-card__notes-line-text {
