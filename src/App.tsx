@@ -175,15 +175,14 @@ const FocusNotes = ({
           className="focus-card__notes-overlay-content"
         >
           {lines.length > 0 ? (
-            <ul className="focus-card__notes-list">
-              {lines.map((line: string, index: number) => (
-                <li className="focus-card__notes-line" key={`${index}-${line}`}>
-                  <span className="focus-card__notes-line-text">
-                    {line.length > 0 ? line : '\u00A0'}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            lines.map((line: string, index: number) => (
+              <div className="focus-card__notes-line" key={`${index}-${line}`}>
+                <span className="focus-card__notes-bullet" aria-hidden />
+                <span className="focus-card__notes-line-text">
+                  {line.length > 0 ? line : '\u00A0'}
+                </span>
+              </div>
+            ))
           ) : (
             <div className="focus-card__notes-placeholder">{placeholder}</div>
           )}
