@@ -22,6 +22,8 @@ const sportsEntries: KeywordIconEntry[] = [
   { icon: '🥊', keywords: ['boxing', 'spar', 'punch', 'bag'] },
   { icon: '🛹', keywords: ['skateboard', 'skateboarding', 'ollie', 'park'] },
   { icon: '⛸️', keywords: ['skating', 'ice', 'figure', 'rink'] },
+  { icon: '🏂', keywords: ['snowboarding', 'snowboard', 'snowboarder'] },
+  { icon: '⛷️', keywords: ['skiing', 'ski', 'skier'] },
   { icon: '🏌️', keywords: ['golf', 'swing', 'putt', 'fairway'] },
   { icon: '⛳', keywords: ['golfing', 'green', 'handicap', 'links'] },
   { icon: '🏄', keywords: ['surf', 'surfing', 'waves', 'ocean'] },
@@ -29,6 +31,7 @@ const sportsEntries: KeywordIconEntry[] = [
   { icon: '🤸', keywords: ['gymnastics', 'cartwheel', 'tumble', 'routine'] },
   { icon: '🎳', keywords: ['bowling'] },
   { icon: '💪', keywords: ['workout', 'lift', 'strong', 'strength'] },
+  { icon: '🕺', keywords: ['dancer', 'dancing'] },
 ];
 
 const creativeEntries: KeywordIconEntry[] = [
@@ -42,6 +45,7 @@ const creativeEntries: KeywordIconEntry[] = [
   { icon: '🎹', keywords: ['piano', 'keyboard', 'scales', 'arpeggio'] },
   { icon: '🎸', keywords: ['guitar', 'strings', 'riff', 'chords'] },
   { icon: '🎻', keywords: ['violin', 'cello', 'orchestra', 'bow'] },
+  { icon: '🎷', keywords: ['saxophone', 'sax', 'jazz', 'blues'] },
   { icon: '🥁', keywords: ['drums', 'percussion', 'rhythm', 'beat'] },
   { icon: '🎤', keywords: ['singing', 'vocals', 'choir', 'solo'] },
   { icon: '🎧', keywords: ['mixing', 'sound', 'music', 'engineer'] },
@@ -49,6 +53,7 @@ const creativeEntries: KeywordIconEntry[] = [
   { icon: '🎬', keywords: ['filming', 'film', 'scene', 'director'] },
   { icon: '🎥', keywords: ['video', 'editing', 'footage', 'clip'] },
   { icon: '📸', keywords: ['photo', 'photography', 'camera', 'shoot'] },
+  { icon: '🪩', keywords: ['disco', 'dj'] },
 ];
 
 const workEntries: KeywordIconEntry[] = [
