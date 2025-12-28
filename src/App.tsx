@@ -32,6 +32,7 @@ import {
   getStartOfWeek,
   parseWeekKey,
 } from './utils/weekDates';
+import { APP_VERSION_DISPLAY, APP_VERSION_TITLE } from './utils/version';
 
 type FocusNotesProps = {
   note: string;
@@ -766,6 +767,8 @@ function App() {
         importInputRef={importInputRef}
         onImportFileChange={handleImportFileChange}
         canExport={hasStoredWeeks}
+        versionDisplay={APP_VERSION_DISPLAY}
+        versionTitle={APP_VERSION_TITLE}
       />
       <header className="app__header">
         <div>

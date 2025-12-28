@@ -18,6 +18,8 @@ export type SettingsPanelProps = {
   importInputRef: RefObject<HTMLInputElement>;
   onImportFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
   canExport: boolean;
+  versionDisplay: string;
+  versionTitle: string;
 };
 
 export const SettingsPanel = ({
@@ -30,6 +32,8 @@ export const SettingsPanel = ({
   importInputRef,
   onImportFileChange,
   canExport,
+  versionDisplay,
+  versionTitle,
 }: SettingsPanelProps) => {
   const panelRef = useRef<HTMLDivElement | null>(null);
 
@@ -161,6 +165,12 @@ export const SettingsPanel = ({
             />
           </section>
         </div>
+
+        <footer className="settings-panel__footer">
+          <small className="settings-panel__version" title={versionTitle}>
+            Version: {versionDisplay}
+          </small>
+        </footer>
       </div>
     </div>
   );
