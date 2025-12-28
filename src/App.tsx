@@ -447,7 +447,7 @@ function App() {
     selectedWeekKey,
   );
   const shouldShowWeekContext = hasAvailableWeeks || currentWeekExists;
-  const canEditCurrentWeek = isCurrentWeek && currentWeekExists;
+  const canEditSelectedWeek = selectedWeekHasData;
   const showStartWeekButton = storageReady && !currentWeekExists;
   const showTagline = !currentWeekExists;
   const selectedWeekEnd = useMemo(
@@ -522,7 +522,7 @@ function App() {
   const handleAddFocus = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!canEditCurrentWeek) {
+    if (!canEditSelectedWeek) {
       return;
     }
 
@@ -550,7 +550,7 @@ function App() {
   };
 
   const adjustNewTarget = (delta: number) => {
-    if (!canEditCurrentWeek) return;
+    if (!canEditSelectedWeek) return;
 
     setNewTarget((current) => {
       const next = Math.min(
@@ -562,7 +562,7 @@ function App() {
   };
 
   const updateSpentHours = (id: string, newSpent: number) => {
-    if (!canEditCurrentWeek) return;
+    if (!canEditSelectedWeek) return;
 
     setFocusItems((items: FocusItem[]) =>
       items.map((item: FocusItem) =>
@@ -577,7 +577,7 @@ function App() {
   };
 
   const adjustSpent = (id: string, delta: number) => {
-    if (!canEditCurrentWeek) return;
+    if (!canEditSelectedWeek) return;
 
     const current = focusItems.find((item: FocusItem) => item.id === id);
     if (!current) return;
@@ -586,7 +586,7 @@ function App() {
   };
 
   const updateFocusTitle = (id: string, title: string) => {
-    if (!canEditCurrentWeek) return;
+    if (!canEditSelectedWeek) return;
 
     const trimmed = title.trim();
     if (!trimmed) return;
@@ -604,7 +604,7 @@ function App() {
   };
 
   const updateTargetHours = (id: string, target: number) => {
-    if (!canEditCurrentWeek) return;
+    if (!canEditSelectedWeek) return;
 
     if (Number.isNaN(target) || target <= 0) {
       return;
@@ -625,7 +625,7 @@ function App() {
   };
 
   const updateFocusNote = (id: string, note: string) => {
-    if (!canEditCurrentWeek) return;
+    if (!canEditSelectedWeek) return;
 
     setFocusItems((items: FocusItem[]) =>
       items.map((item: FocusItem) =>
@@ -661,7 +661,7 @@ function App() {
   }, [activeEdit?.id, activeEdit?.field]);
 
   const startEditing = (item: FocusItem, field: 'title' | 'target') => {
-    if (!canEditCurrentWeek) return;
+    if (!canEditSelectedWeek) return;
 
     cancelEditRef.current = false;
     setActiveEdit({
@@ -721,7 +721,7 @@ function App() {
   };
 
   const removeFocusItem = (id: string, title: string) => {
-    if (!canEditCurrentWeek) return;
+    if (!canEditSelectedWeek) return;
 
     const confirmed = window.confirm(
       `Remove focus card "${title || 'Untitled'}"? This action cannot be undone.`,
@@ -915,7 +915,7 @@ function App() {
                 placeholder="e.g. Product strategy"
                 value={newTitle}
                 onChange={(event) => setNewTitle(event.target.value)}
-                disabled={!canEditCurrentWeek}
+                disabled={!canEditSelectedWeek}
                 required
               />
             </label>
@@ -929,7 +929,7 @@ function App() {
                   <button
                     type="button"
                     onClick={() => adjustNewTarget(-1)}
-                    disabled={!canEditCurrentWeek || newTarget <= 1}
+                    disabled={!canEditSelectedWeek || newTarget <= 1}
                     aria-label="Decrease target by 1 hour"
                   >
                     -1h
@@ -937,7 +937,7 @@ function App() {
                   <button
                     type="button"
                     onClick={() => adjustNewTarget(-0.5)}
-                    disabled={!canEditCurrentWeek || newTarget <= 0.5}
+                    disabled={!canEditSelectedWeek || newTarget <= 0.5}
                     aria-label="Decrease target by 0.5 hours"
                   >
                     -0.5h
@@ -945,7 +945,7 @@ function App() {
                   <button
                     type="button"
                     onClick={() => adjustNewTarget(0.5)}
-                    disabled={!canEditCurrentWeek}
+                    disabled={!canEditSelectedWeek}
                     aria-label="Increase target by 0.5 hours"
                   >
                     +0.5h
@@ -953,7 +953,7 @@ function App() {
                   <button
                     type="button"
                     onClick={() => adjustNewTarget(1)}
-                    disabled={!canEditCurrentWeek}
+                    disabled={!canEditSelectedWeek}
                     aria-label="Increase target by 1 hour"
                   >
                     +1h
@@ -964,7 +964,7 @@ function App() {
             <button
               type="submit"
               className="primary-button"
-              disabled={!canEditCurrentWeek}
+              disabled={!canEditSelectedWeek}
             >
               Add focus card
             </button>
@@ -1021,7 +1021,7 @@ function App() {
                             type="button"
                             className="focus-card__editable focus-card__editable--title"
                             onClick={() => startEditing(item, 'title')}
-                            disabled={!canEditCurrentWeek}
+                            disabled={!canEditSelectedWeek}
                             aria-label={`Edit title for ${item.title}`}
                           >
                             {item.title}
@@ -1053,7 +1053,7 @@ function App() {
                             type="button"
                             className="focus-card__editable focus-card__editable--target"
                             onClick={() => startEditing(item, 'target')}
-                            disabled={!canEditCurrentWeek}
+                            disabled={!canEditSelectedWeek}
                             aria-label={`Edit target hours for ${item.title}`}
                           >
                             {item.targetHours.toFixed(1)}h
@@ -1073,7 +1073,7 @@ function App() {
                         type="button"
                         className="icon-button"
                         onClick={() => removeFocusItem(item.id, item.title)}
-                        disabled={!canEditCurrentWeek}
+                        disabled={!canEditSelectedWeek}
                         aria-label={`Remove ${item.title}`}
                       >
                         ×
@@ -1102,28 +1102,28 @@ function App() {
                       <button
                         type="button"
                         onClick={() => adjustSpent(item.id, -1)}
-                        disabled={!canEditCurrentWeek || item.spentHours < 1}
+                        disabled={!canEditSelectedWeek || item.spentHours < 1}
                       >
                         -1h
                       </button>
                       <button
                         type="button"
                         onClick={() => adjustSpent(item.id, -0.5)}
-                        disabled={!canEditCurrentWeek || item.spentHours <= 0}
+                        disabled={!canEditSelectedWeek || item.spentHours <= 0}
                       >
                         -0.5h
                       </button>
                       <button
                         type="button"
                         onClick={() => adjustSpent(item.id, 0.5)}
-                        disabled={!canEditCurrentWeek}
+                        disabled={!canEditSelectedWeek}
                       >
                         +0.5h
                       </button>
                       <button
                         type="button"
                         onClick={() => adjustSpent(item.id, 1)}
-                        disabled={!canEditCurrentWeek}
+                        disabled={!canEditSelectedWeek}
                       >
                         +1h
                       </button>
@@ -1140,7 +1140,7 @@ function App() {
                     <FocusNotes
                       note={item.note}
                       placeholder="Jot down highlights, learnings, or next steps."
-                      disabled={!canEditCurrentWeek}
+                      disabled={!canEditSelectedWeek}
                       onChange={(value: string) =>
                         updateFocusNote(item.id, value)
                       }
